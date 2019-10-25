@@ -26,6 +26,94 @@ https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/product-pag
 
 # Kubernetes 101
 
+# Monitoring Kubernetes
 
-### Containers
-This is test
+To get full visibility into your applications we need two key elements, metrics and logs for the following aspect.
+
+#### Infrastructure level
+This level will have data pertaining to the worker nodes. For example metrics such as CPU percentage, memory used and also system logs.
+
+#### Kubernetes level
+This level involves everything at the Kubernetes level including pods, containers, error logs and much more.
+
+In this lab we will collect data from both these levels.
+
+# Data pipline using Beats and Logstsah
+In this lab will discuss two different pipelines involving different technologies to collect the metrics. You can use either in production depending on your needs.
+
+Beats is a family of popular open-source data collection agents. Logstash is a popular open-source,server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then pushes the result to various destinations. Logstash acts at the parsing and buffering layer de-coupling the source and the destination. For this lab, we will deploy multiple Logstash instances in an Auto Scaling Group that scale based on resource needs.
+
+#### Metricbeat -> Logstash -> Amazon ES
+ In this case we will use metricbeat to collect system and Kubernetes metrics and send it out to Logstash.
+
+#### Filebeat -> Logstash -> Amazon ES
+Filebeat is a light-weight agent that can tail log files and push the data to Logstash.
+
+# Data pipline using Fluentd and Fluentbit
+
+Similarly to the previous pipeline, Fluentd is another popular open-source alternative to collect metrics and logs. Fluentbit is part of the same family of product and acts as a more light-weight forwarder.
+
+#### Fluentbit (metrics) -> Fluentd -> Amazon ES
+In this case, we will use Fluentbit, a light-weight agent to collect metrics from Redis and write into Fluentd. Fluentd will parse the data and index into Amazon ES
+
+#### Fluentd -> Amazon ES
+Fluent can act as both the data collector and the data parser. We will define various log inputs to Fluentd.
+
+
+# Let the lab begin!
+
+In order to save time, we have already pre-deployed the environment for you. You account will have the following resources
+
+* AWS Cloud9 IDE environment (this is where you'll spend the most time for this lab)
+* Amazon ES domain
+* Amazon EKS Cluster, API server, worker nodes
+* Bastion host (Amazon EC2 instance) with SSH key
+
+# What we will be monitoring today
+We will use a simple deploy a simple, multi-tier web application using Kubernetes and Docker. This example consists of a guestbook application with the following components:
+
+* A single-instance Redis master to store guestbook entries
+* Multiple replicated Redis instances to serve reads
+* Multiple web frontend instances
+
+
+
+![alt text](
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png){width=50%}
+
+# Log into Amazon Cloud9 IDE
+*TBD Disable role in settings*
+
+Run the following commands to check if EKS is configured correctly.
+
+```
+kubectl get svc
+```
+*TBD you should see the output below*
+
+
+# Deploy Logstash
+*TBD steps to deploy logstash and config files*
+
+# Deploy Metricbeat
+*TBD review dashboard*
+
+# Launch Kibana
+* *TBD ssh tunnel instructions*
+* *TBD create index pattern*
+
+# Deploy Filebeat
+* *Send data to logstahs for parsing*
+* *Review logs via Kibana*
+
+# Deploy Fluentd
+*Walk through one Fluentd parsing configuration TBD*
+
+# Deploy Fluentbit
+*TBD walk-throgh fluentbit deployment + sidecar container*
+
+# Deploy Guestbook application
+
+# Explore in Kibana
+
+# Mystery hunt excercies 
