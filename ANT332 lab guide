@@ -25,6 +25,7 @@ https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/product-pag
 
 
 # Kubernetes 101
+@saad
 
 # Monitoring Kubernetes
 
@@ -36,7 +37,7 @@ This level will have data pertaining to the worker nodes. For example metrics su
 #### Kubernetes level
 This level involves everything at the Kubernetes level including pods, containers, error logs and much more.
 
-In this lab we will collect data from both these levels.
+In this lab we will collect data from both these levels. There's multilple ways to capture and process this data. Lets take a look at two most popular way our customers love to do it.
 
 # Data pipline using Beats and Logstsah
 In this lab will discuss two different pipelines involving different technologies to collect the metrics. You can use either in production depending on your needs.
@@ -57,7 +58,7 @@ Similarly to the previous pipeline, Fluentd is another popular open-source alter
 In this case, we will use Fluentbit, a light-weight agent to collect metrics from Redis and write into Fluentd. Fluentd will parse the data and index into Amazon ES
 
 #### Fluentd -> Amazon ES
-Fluent can act as both the data collector and the data parser. We will define various log inputs to Fluentd.
+Fluentd can act as both the data collector and the data parser. We will define various log inputs to Fluentd.
 
 
 # Let the lab begin!
@@ -70,7 +71,7 @@ In order to save time, we have already pre-deployed the environment for you. You
 * Bastion host (Amazon EC2 instance) with SSH key
 
 # What we will be monitoring today
-We will use a simple deploy a simple, multi-tier web application using Kubernetes and Docker. This example consists of a guestbook application with the following components:
+We will use a simple 'Guestbook' application, which is a multi-tier web application using Kubernetes and Docker. This example consists of a guestbook application with the following components:
 
 * A single-instance Redis master to store guestbook entries
 * Multiple replicated Redis instances to serve reads
@@ -79,7 +80,7 @@ We will use a simple deploy a simple, multi-tier web application using Kubernete
 
 
 ![alt text](
-https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png){width=50%}
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
 
 # Log into Amazon Cloud9 IDE
 *TBD Disable role in settings*
@@ -93,21 +94,82 @@ kubectl get svc
 
 
 # Deploy Logstash
-*TBD steps to deploy logstash and config files*
+*TBD @saad steps to deploy logstash and config files*
 
-# Deploy Metricbeat
-*TBD review dashboard*
+Logstash is an open source data collection engine with real-time pipelining capabilities. Logstash can dynamically unify data from disparate sources and normalize the data into destinations of your choice. Cleanse and democratize all your data for diverse advanced downstream analytics and visualization use cases.
+
+A Logstash pipeline has three key elements, inputs, filters and outputs. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
+
+In this lab we will built the following pipeline to parse *TBD log* and output to Amazon ES.
+
+```
+input logstash config details here
+```
+
+# Deploying Metricbeat
+*TBD review dashboard, deployment steps*
+
+Metricbeat consists of modules and metricsets. A Metricbeat module defines the basic logic for collecting data from a specific service, such as Redis, MySQL, and so on. The module specifies details about the service, including how to connect, how often to collect metrics, and which metrics to collect.
+
+In this lab we enable **system** and **kubernetes** modules. For more information open the metricbeat.yaml file.
+
+```
+- module: system
+     period: 10s
+     metricsets:
+       - cpu
+       - load
+       - memory
+       ....
+- module: kubernetes
+      metricsets:
+        - node
+        - system
+        - pod
+        ....
+```
+
+
+Note: Metricbeat gets its key metrics from a internal kubernetes service called **kube-state-metrics** It is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. It is focused on the health of the various objects inside, such as deployments, nodes and pods.
+
 
 # Launch Kibana
 * *TBD ssh tunnel instructions*
 * *TBD create index pattern*
 
-# Deploy Filebeat
+# Deploying Filebeat
 * *Send data to logstahs for parsing*
 * *Review logs via Kibana*
 
-# Deploy Fluentd
+Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
+
+In this lab we will configure Filebeat to collect *TBD log file* and send the data to logstash.
+
+```
+filebeat.inputs:
+    - type: log
+      symlinks: true
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"s
+```
+
+# Deploying Fluentd
 *Walk through one Fluentd parsing configuration TBD*
+
+Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
+
+Fluentd's scalability has been proven in the field: its largest user currently collects logs from 500,000+ servers.
+
+
+![alt](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/fluentd-architecture.png)
+
 
 # Deploy Fluentbit
 *TBD walk-throgh fluentbit deployment + sidecar container*
@@ -116,4 +178,4 @@ kubectl get svc
 
 # Explore in Kibana
 
-# Mystery hunt excercies 
+# Mystery hunt excercies
