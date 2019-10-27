@@ -93,12 +93,12 @@ kubectl get svc
 *TBD you should see the output below*
 
 
-# Deploy Logstash
+# Deploying Logstash
 *TBD @saad steps to deploy logstash and config files*
 
 Logstash is an open source data collection engine with real-time pipelining capabilities. Logstash can dynamically unify data from disparate sources and normalize the data into destinations of your choice. Cleanse and democratize all your data for diverse advanced downstream analytics and visualization use cases.
 
-A Logstash pipeline has three key elements, inputs, filters and outputs. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
+A Logstash pipeline has three key elements **inputs, filters and outputs**. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
 
 In this lab we will built the following pipeline to parse *TBD log* and output to Amazon ES.
 
@@ -165,14 +165,115 @@ filebeat.inputs:
 
 Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
 
-Fluentd's scalability has been proven in the field: its largest user currently collects logs from 500,000+ servers.
 
 
 ![alt](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/fluentd-architecture.png)
 
+Fluentd has the following key components - Setup, Inputs, Filters, Parsers and Outputs. You can find the these configurations under ```values.yml``` file under ```fluentd-elasticsearch``` folder. We use Fluentd to collect and process multiple sources of logs such as apache logs, kubelet, kube-api-server and more.
+
+#### Setup
+The configuration files is the fundamental piece to connect all things together, as it allows to define which Inputs or listeners Fluentd will have and set up common matching rules to route the Event data to a specific Output.
+
+#### Input
+Extend Fluentd to retrieve and pull event logs from external sources. An input plugin typically creates a thread socket and a listen socket. It can also be written to periodically pull data from data sources.
+
+In this snippet below the input plugin is configured to tail and collect Apache access logs that are in json format.
+```
+<source>
+  @type tail
+  path /var/log/containers/*frontend*.log
+  pos_file /var/log/apache-access.log.pos
+  format json
+  tag apache.access
+  ....
+</source>
+```
+
+#### Parser
+Fluentd has a pluggable system that enables the user to create their own parser formats. In the code snippet below, we are using the out-of-the-box ```apache2``` parser to parse the access logs. To parse custom logs, you can leverage ```regexp``` to support regex parsing.
+
+```
+  <filter apache.access>
+     @type parser
+     key_name log
+     format apache2
+     ....
+   </filter>
+```
+
+#### Output
+This plugin allows you write data to various output destinations.
+In the code snippet below the output is configured to Elasticsearch endpoint and port. With this ```logstash_format``` set true, Fluentd uses the conventional index name format logstash-%Y.%m.%d.
+
+Fluentd can also buffer data, in this case we are leverage disk based persistent buffering set by ```@type file``` setting.
+```
+<match apache.**>
+      @type elasticsearch
+      host "#{ENV['OUTPUT_HOST']}"
+      port "#{ENV['OUTPUT_PORT']}"
+      logstash_prefix apache
+      logstash_format true
+      <buffer>
+        @type file
+        path /var/log/fluentd-buffers/apache.system.buffer
+        flush_mode interval
+        ....
+      </buffer>
+    </match>
+```
 
 # Deploy Fluentbit
 *TBD walk-throgh fluentbit deployment + sidecar container*
+
+Fluent Bit is an open source and multi-platform Log Processor and Forwarder which allows you to collect data/logs from different sources, unify and send them to multiple destinations. It's fully compatible with Docker and Kubernetes environments.
+
+Both Fluentd and Fluent Bit share a lot of similarities, Fluent Bit is fully based on the design and experience of Fluentd architecture and general design. Choosing which one to use depends on the final needs, from an architecture perspective we can consider:
+* Fluentd is a log collector, processor, and aggregator.
+* Fluent Bit is a log collector and processor (it doesn't have strong aggregation features like Fluentd).
+
+Consider Fluentd mainly as an Aggregator and Fluent Bit as a Log Forwarder, we can see both projects complement each other providing a full reliable solution.
+
+Lets use Fluentbit to capture **metrics** from our Redis deployments. All the agents we discussed so far in this guide were be deployed as a daemonset (a POD that runs on every node of the cluster). With Fluentbit, we're deploying it as a side-car container (for redis contianers) instead. With this approach, whenever redis contaner is deployed there is a dedicated Fluentbit side-car container attached to collect all the relevant data.
+
+Lets take a look at the ```redis-slave.yml``` deployment file for Guestbook application. This ensures that  a Fluentbit container is spun up every time a redis container launches.
+```
+spec:
+      containers:
+      - name: slave
+        image: gcr.io/google_samples/gb-redisslave:v1
+        resources:
+        ....
+        ports:
+        - containerPort: 6379
+
+      - name: redis-statistic
+        image: fluent/fluent-bit:0.14.6
+        resources:
+        ....
+```
+Once its launched, Fluentbit is configured to run a custom script (loaded into the Fluentbit container path /bin/redis) to capture metrics from redis. It then forwards the data to Fluentd using the forwad protocol that was pre-setup. You can find these configurations are in ```fluent-bit.conf```.
+
+```
+<source>
+  @type exec
+  tag   redis
+  command bash /bin/redis
+  type json
+  run_interval 1m
+</source>
+
+<match **>
+  @type stdout
+</match>
+
+#!/bin/bash
+
+for i in $( (printf 'info\r\n';) | nc -w 1 redis 6379 | grep ':'); do
+ key=$(echo "$i" | cut -d ":" -f1 )
+ value=$(echo "$i" | cut -d ":" -f2 | sed 's/\r$//g' )
+ echo "{\"$key\": \"$value\"}"
+done
+```
 
 # Deploy Guestbook application
 
