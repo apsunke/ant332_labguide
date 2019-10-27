@@ -81,8 +81,14 @@ We will use a simple 'Guestbook' application, which is a multi-tier web applicat
 
 ![alt text](
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
+# Getting familiar with today's lab environment
+For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana. We recommend keeping both these open in your broswer as there will significant forth.
 
-# Log into Amazon Cloud9 IDE
+**AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. We will run all our commands from here.
+
+**Kibana** is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. We will use Kibana to visualize all the logs and metrics.
+
+# Configure Cloud9 IDE
 *TBD Disable role in settings*
 
 Run the following commands to check if EKS is configured correctly.
@@ -92,6 +98,13 @@ kubectl get svc
 ```
 *TBD you should see the output below*
 
+# Configure Kibana
+
+Amazon ES supports **public access** domains, which can receive requests from any internet-connected device, and **VPC access** domains, which are isolated from the public internet and hence highly recommended.
+
+In this lab we have deployed Amazon ES with **VPC access** as its more secure. This endpoint is only visible to the servers inside that same VPC. To access Kibana from your laptop we have to create a SSH tunnel from your laptop to a *Bastion host* running inside the same VPC. Once you setup this up, you can access Kibana directly from your local broswer on your laptop.
+
+*TBD Instructions for SSH tunnel*
 
 # Deploying Logstash
 *TBD @saad steps to deploy logstash and config files*
@@ -136,6 +149,8 @@ Note: Metricbeat gets its key metrics from a internal kubernetes service called 
 # Launch Kibana
 * *TBD ssh tunnel instructions*
 * *TBD create index pattern*
+
+When you deploy Amazon ES domain, you have the choice to deploy it into a VPC
 
 # Deploying Filebeat
 * *Send data to logstahs for parsing*
