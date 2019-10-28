@@ -391,10 +391,57 @@ Kibana is now fully setup to start visualizing Kubernetes logs. You can go to th
 
 # Deploy Guestbook application
 
+**Run** this command to deploy the *Guestbook* application. This will deploy frontend, redis master and redis slaves.
+
 ```
 chmod +x deploy.sh && ./deploy.sh
 ```
 
+**Run** this command to verify Guestbook deployed successfully
+
+```
+kubectl get all -n guestbook
+```
+You should see all the pods, services and deplyments running similar to the example below
+
+```
+pod/frontend-69859f6796-f4nrp      1/1     Running   0          26m
+pod/frontend-69859f6796-ktzhv      1/1     Running   0          26m
+pod/frontend-69859f6796-l2s9m      1/1     Running   0          26m
+pod/redis-master-596696dd4-8g6n9   1/1     Running   0          26m
+pod/redis-slave-96685cfdb-9dv57    1/1     Running   0          26m
+pod/redis-slave-96685cfdb-xgmbr    1/1     Running   0          26m
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+service/frontend       LoadBalancer   172.20.125.197   <pending>     443:31112/TCP   26m
+service/redis-master   ClusterIP      172.20.195.144   <none>        6379/TCP        26m
+service/redis-slave    ClusterIP      172.20.248.13    <none>        6379/TCP        26m
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/frontend       3/3     3            3           26m
+deployment.apps/redis-master   1/1     1            1           26m
+deployment.apps/redis-slave    2/2     2            2           26m
+
+NAME                                     DESIRED   CURRENT   READY   AGE
+replicaset.apps/frontend-69859f6796      3         3         3       26m
+replicaset.apps/redis-master-596696dd4   1         1         1       26m
+replicaset.apps/redis-slave-96685cfdb    2         2         2       26m
+```
+
+
 # Explore in Kibana
+Lets explore the log data in Kibana. Fluentd is configured to output all the logs into **kubernetes-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+
+Click Discover tab -> Choose ***kubernetes-*** from dropdown -> use search box to search for guestbook or any other term you're interested in
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-1.png)
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-2.png)
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-3.png)
+
+You will now start seeing all the logs that Fluentd is pushing into Amazon ES. Feel free to search for any other terms your'e interested in such as
+
+Bonus point: If you'd like this data to be more readable, you can create a custom view by choosing specific fields to be displayed. Click on the link below for a quick video on creating your own custom Kibana view.
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-advanced-view.gif
 
 # Mystery hunt excercies
