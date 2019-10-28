@@ -24,7 +24,7 @@ https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/product-pag
 
 
 # Kubernetes 101
-@saad
+@saadf
 
 # Monitoring Kubernetes
 
@@ -106,7 +106,7 @@ Amazon ES supports **public access** domains, which can receive requests from an
 
 In this lab we have deployed Amazon ES with **VPC access** as its more secure. This endpoint is only visible to the servers inside that same VPC. To access Kibana from your laptop we have to create a SSH tunnel from your laptop to a *Bastion host* running inside the same VPC. Once you setup this up, you can access Kibana directly from your local broswer on your laptop.
 
-To eshtablish an SSH tunnel, you need the following three key details
+To eshtablish an SSH tunnel, you need the following three key details. We will be using these details throughout the workshop, we **highly recommend** you make a note of it and keep it handy.
 
 **Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
 
@@ -203,14 +203,32 @@ deployment.apps/kube-state-metrics created
 
 
 #### Deploy metricbeat
-We need to configure metricbeat to the logstash endpoint.
+**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash.
+```
+kubectl apply -f /home/ec2-user/environment/ant332/metricbeat-deployment.yaml
+```
 
 
-# Launch Kibana
-* *TBD create index pattern*
 
-When you deploy Amazon ES domain, you have the choice to deploy it into a VPC
+# View Metricbeat data in Kibana
+Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
 
+Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+
+Click Mangement tab -> Index Patterns -> Create Index Pattern -> ***metricbeat-**** -> ***@timestamp*** -> Create Index Pattern
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-1.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-3.png)
+
+
+Congratulations! You've configured you're first end-to-end pipeline. You will now be able to see all the metricbeat data in real-time.
+
+***Pro tip:*** On the *top right corner* of Kibana you will find two very useful settings. **Auto-refresh** controls how frequent your dashboard needs to refresh. We recommend setting it to 30 seconds. The next setting labled **last 15 minutes** controls the time-range of the data Kibana will display. When set to 'last 15 minutes', you will only see the most recent 15 minutes of data. You can leave this at the default setting.
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-pro-tip.png)
 # Filebeat 101
 * *Send data to logstahs for parsing*
 * *Review logs via Kibana*
@@ -308,6 +326,7 @@ Both Fluentd and Fluent Bit share a lot of similarities, Fluent Bit is fully bas
 
 Consider Fluentd mainly as an Aggregator and Fluent Bit as a Log Forwarder, we can see both projects complement each other providing a full reliable solution.
 
+# Fluentbit deployment as a 'Sidecar'
 In this lab we'll use Fluentbit to capture **metrics** from our Redis deployments. All the agents we discussed so far in this guide were be deployed as a daemonset (a POD that runs on every node of the cluster). With Fluentbit, we're deploying it as a side-car container (for redis contianers) instead. With this approach, whenever redis contaner is deployed there is a dedicated Fluentbit side-car container attached to collect all the relevant data.
 
 Lets take a look at the ```redis-slave.yml``` deployment file for Guestbook application. This ensures that  a Fluentbit container is spun up every time a redis container launches.
@@ -355,7 +374,7 @@ done
 
 # Deploying Fluentd and Fluentbit
 
-Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by modifying the **url** with your Amazon ES endpoint.
+Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by **modifying the url with your Amazon ES endpoint**
 
 ```
 export URL2=vpc-aes-lab-your-amazon-es-endpoint-url
@@ -367,14 +386,26 @@ A popular method to deploy complex applications in Kubernetes is through **Helm*
 ```
 helm upgrade -i --namespace=logging --set elasticsearch.host=$URL2 fluentd-elasticsearch fluentd-elasticsearch
 ```
-**Run** this command and verify if the deployment was successful.
+**Run** this command and verify if the deployment was successful. You should see ```fluentd-elasticsearch``` is deployed.
 
 ```
 helm ls
 ```
 
-Fluentd will instantly start pushing logs into Amazon ES, next step is to configure Kibana. Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
+Fluentd will instantly start pushing logs into Amazon ES, next step is to configure Kibana.  In this lab, Fluentd is configured to capture all the logs in kubernetes. However to keep the data separate, it is configured to write to 3 different indices in Amazon ES. Understanding what data is in which index will be **important** for the last part of this workshop.
 
+**apache-** This index holds logs from the apache server in 'Guestbook' application
+
+**redis-** This index holds all redis metrics that Fluentbit is collecting
+
+**kubernetes-** This index holds all the other logs
+
+
+# Configuring Index Patterns in Kibana
+Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards. Follow the next steps to create Index patterns for all three indices - **kubernetes, redis, apache**
+
+
+# Configure Kibana for kubernetes index
 Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
 Click Mangement tab -> Index Patterns -> Create Index -> ***kubernetes-**** -> ***@timestamp*** -> Create Index Pattern
@@ -387,14 +418,36 @@ Click Mangement tab -> Index Patterns -> Create Index -> ***kubernetes-**** -> *
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step4.png)
 
-Kibana is now fully setup to start visualizing Kubernetes logs. You can go to the *Discover* tab on the left to start exploring the data. Lets deploy the *Guestbook* application so we can start ingesting logs and metrics.
+Kibana is now fully setup to start visualizing Kubernetes logs. You can go to the *Discover* tab on the left to start exploring the data.
+
+# Configure Kibana for redis index
+Repeat the previous step to create an index pattern for **redis-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+
+Click Mangement tab -> Index Patterns -> Create Index -> ***redis-**** -> ***@timestamp*** -> Create Index Pattern
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-index.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-index-2.png)
+
+
+# Configure Kibana for apache index
+Repeat the previous step again to create an index pattern for **apache-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Click Mangement tab -> Index Patterns -> Create Index -> ***apache-**** -> ***@timestamp*** -> Create Index Pattern
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/apache-index.png)
+
+Lets deploy the *Guestbook* application so we can start ingesting logs and metrics.
 
 # Deploy Guestbook application
 
 **Run** this command to deploy the *Guestbook* application. This will deploy frontend, redis master and redis slaves.
 
 ```
-chmod +x deploy.sh && ./deploy.sh
+ kubectl apply -f guestbook/redis-master.yml &&
+ kubectl apply -f guestbook/redis-master-service.yaml &&
+ kubectl apply -f guestbook/redis-slave.yml &&
+ kubectl apply -f guestbook/redis-slave-service.yaml &&
+ kubectl apply -f guestbook/frontend-deployment.yaml &&
+ kubectl apply -f guestbook/frontend-service.yaml
 ```
 
 **Run** this command to verify Guestbook deployed successfully
@@ -429,9 +482,9 @@ replicaset.apps/redis-slave-96685cfdb    2         2         2       26m
 
 
 # Explore in Kibana
-Lets explore the log data in Kibana. Fluentd is configured to output all the logs into **kubernetes-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Lets explore the log data in Kibana. Fluentd is configured to output all the logs into **kubernetes-*** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
-Click Discover tab -> Choose ***kubernetes-*** from dropdown -> use search box to search for guestbook or any other term you're interested in
+Click Discover tab -> Choose ***kubernetes-**** from dropdown -> use search box to search for guestbook or any other term you're interested in
 
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-1.png)
 
@@ -444,4 +497,9 @@ You will now start seeing all the logs that Fluentd is pushing into Amazon ES. F
 Bonus point: If you'd like this data to be more readable, you can create a custom view by choosing specific fields to be displayed. Click on the link below for a quick video on creating your own custom Kibana view.
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-advanced-view.gif
 
-# Mystery hunt excercies
+# Mystery hunt exercise
+Great job setting the environment! You now have logs and metrics flowing in Amazon ES and you can visualize all of this data in Kibana.
+
+The last portion of this workshop is called **Mystery Hunt**. We'll ask you to run mystery scripts that make changes to your environment, you'll then need to investigate and find root cause. We'll have hints along the way to guide you.
+
+Kibana is all you need for this exercise, it has all the data including visualizations.
