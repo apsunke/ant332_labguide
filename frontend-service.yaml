@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: guestbook
+    tier: frontend
+  annotations:
+    # Service external-dns has to be deployed for this A record to be created in AWS Route53
+    external-dns.alpha.kubernetes.io/hostname: guestbook.sec.ring.com
+
+    # Load Balancer type that will be launched in AWS, ELB or NLB.
+    service.beta.kubernetes.io/aws-load-balancer-type: "elb"
+
+    # Use ACM cert that is authorized for domain chosen above
+    # Replace with ARN of the working ACM cert
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:us-east-1:239226036377:certificate/2bde667e-3932-4bb4-b774-708c2ef6bbfc"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+
+    # Maps traffic to 443
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+
+    # You may want to increment ELB idle conn timeout for problems with WebSockets and Server-Side Events
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+spec:
+  loadBalancerSourceRanges:
+    # Open to the world since Kibana is now auth-ed
+    - 0.0.0.0/0
+  # comment or delete the following line if you want to use a LoadBalancer
+  type: LoadBalancer
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  # type: LoadBalancer
+  ports:
+  - name: https
+    port: 443
+    targetPort: 80
+  selector:
+    app: guestbook
+    tier: frontend
