@@ -5,7 +5,6 @@ In this lab we will learn to capture logs and monitor metrics from Amazon Elasti
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/Overall+architecture.png "Logo Title Text 1")
 
-
 # What is Amazon Elasticsearch?
 Amazon Elasticsearch Service is a fully managed service that makes it easy for you to deploy, secure, and operate Elasticsearch at scale with zero down time. The service offers open-source Elasticsearch APIs, managed Kibana, and integrations with Logstash and other AWS Services, enabling you to securely ingest data from any source and search, analyze, and visualize it in real time. Amazon Elasticsearch Service lets you pay only for what you use – there are no upfront costs or usage requirements. With Amazon Elasticsearch Service, you get the ELK stack you need, without the operational overhead.
 
@@ -62,7 +61,7 @@ Fluentd can act as both the data collector and the data parser. We will define v
 
 
 # Let the lab begin!
-
+@Saad
 In order to save time, we have already pre-deployed the environment for you. You account will have the following resources
 
 * AWS Cloud9 IDE environment (this is where you'll spend the most time for this lab)
@@ -93,10 +92,13 @@ For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana
 
 Run the following commands to check if EKS is configured correctly.
 
+**Intro to kubectl**
+
 ```
 kubectl get svc
 ```
 *TBD you should see the output below*
+@saad
 
 # Configure Kibana
 
@@ -104,7 +106,35 @@ Amazon ES supports **public access** domains, which can receive requests from an
 
 In this lab we have deployed Amazon ES with **VPC access** as its more secure. This endpoint is only visible to the servers inside that same VPC. To access Kibana from your laptop we have to create a SSH tunnel from your laptop to a *Bastion host* running inside the same VPC. Once you setup this up, you can access Kibana directly from your local broswer on your laptop.
 
+To eshtablish an SSH tunnel, you need the following three key details
+
+**Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
+
+You can find this under Services -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy IP address next to ```OutputFromNestedBastionStack``` -> Copy Amazon ES endpoint under ```OutputFromNestedNetworkStack```
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step3.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step4.png)
+
+
+**Step 2: SSH key file for Bastion host**
+
+**Step 3: Establish SSH tunnel**
+
+@saad windows and mac laptop
 *TBD Instructions for SSH tunnel*
+
+**Step 4: Connect to Kibana with your local browser**
+
+Click on this deep link to open Kibana in local browser on your laptop and on the welcome screen click **Explore on my own**
+
+http://localhost:9200/_plugin/kibana
+
+You will will taken to the Kibana home page with many controls and dashboards. Kibana does not have any data yet, so lets switch back to Cloud9 to start emitting data to Amazon ES.
 
 # Deploying Logstash
 *TBD @saad steps to deploy logstash and config files*
@@ -114,14 +144,16 @@ Logstash is an open source data collection engine with real-time pipelining capa
 A Logstash pipeline has three key elements **inputs, filters and outputs**. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
 
 In this lab we will built the following pipeline to parse *TBD log* and output to Amazon ES.
+@Saad
 
 ```
 input logstash config details here
 ```
 
-# Deploying Metricbeat
+# Metricbeat 101
 *TBD review dashboard, deployment steps*
 
+Metricbeat is a lightweight open-source agent to collect system and service statistics.
 Metricbeat consists of modules and metricsets. A Metricbeat module defines the basic logic for collecting data from a specific service, such as Redis, MySQL, and so on. The module specifies details about the service, including how to connect, how often to collect metrics, and which metrics to collect.
 
 In this lab we enable **system** and **kubernetes** modules. For more information open the metricbeat.yaml file.
@@ -145,16 +177,45 @@ In this lab we enable **system** and **kubernetes** modules. For more informatio
 
 Note: Metricbeat gets its key metrics from a internal kubernetes service called **kube-state-metrics** It is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. It is focused on the health of the various objects inside, such as deployments, nodes and pods.
 
+#### Install kube-state-metrics
+**Run** the following command to install kube-state-metricsets
+
+```
+kubectl apply -f kube-state-metrics-cluster-role-binding.yaml &&
+kubectl apply -f kube-state-metrics-service-account.yaml &&
+kubectl apply -f kube-state-metrics-cluster-role.yaml &&
+kubectl apply -f kube-state-metrics-service.yaml &&
+kubectl apply -f kube-state-metrics-deployment.yaml
+```
+
+If its succesfully created, you should see *createad* messages like the ones below
+```clusterrolebinding.rbac.authorization.k8s.io/kube-state-metrics created
+serviceaccount/kube-state-metrics created
+clusterrole.rbac.authorization.k8s.io/kube-state-metrics created
+service/kube-state-metrics created
+deployment.apps/kube-state-metrics created
+```
+**Run** the following command to double-check if its successfully running. You should see ```kube-state-metrics``` listed in the result along with other internal deployments.
+
+```
+ kubectl get deployment -n kube-system
+ ```
+
+
+#### Deploy metricbeat
+We need to configure metricbeat to the logstash endpoint.
+
 
 # Launch Kibana
-* *TBD ssh tunnel instructions*
 * *TBD create index pattern*
 
 When you deploy Amazon ES domain, you have the choice to deploy it into a VPC
 
-# Deploying Filebeat
+# Filebeat 101
 * *Send data to logstahs for parsing*
 * *Review logs via Kibana*
+
+*@Saad*
 
 Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
 
@@ -175,7 +236,7 @@ filebeat.inputs:
                 logs_path: "/var/log/containers/"s
 ```
 
-# Deploying Fluentd
+# Fluentd 101
 *Walk through one Fluentd parsing configuration TBD*
 
 Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
@@ -236,7 +297,18 @@ Fluentd can also buffer data, in this case we are leverage disk based persistent
       </buffer>
     </match>
 ```
+# Deploying Fluentd
 
+Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by modifying the **url** with your Amazon ES endpoint.
+
+```
+export URL2=your-amazon-es-endpoint-url
+```
+
+After this, **run** this command to deploy Fluentd.
+```
+helm upgrade -i --namespace=logging --set elasticsearch.host=$URL2 fluentd-elasticsearch fluentd-elasticsearch
+```
 # Deploy Fluentbit
 *TBD walk-throgh fluentbit deployment + sidecar container*
 
@@ -289,6 +361,9 @@ for i in $( (printf 'info\r\n';) | nc -w 1 redis 6379 | grep ':'); do
  echo "{\"$key\": \"$value\"}"
 done
 ```
+
+
+
 
 # Deploy Guestbook application
 
