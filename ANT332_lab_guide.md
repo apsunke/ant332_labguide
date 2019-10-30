@@ -265,6 +265,31 @@ kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
 ```
 Once the pipeline is ready, we can move to deploying our beats platforms.
 
+# Filebeat 101
+* *Send data to logstahs for parsing*
+* *Review logs via Kibana*
+
+*@Saad*
+
+Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
+
+In this lab we will configure Filebeat to collect *TBD log file* and send the data to logstash.
+
+```
+filebeat.inputs:
+    - type: log
+      symlinks: true
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"s
+```
+
 # Metricbeat 101
 *TBD review dashboard, deployment steps*
 
@@ -316,14 +341,11 @@ deployment.apps/kube-state-metrics created
  kubectl get deployment -n kube-system
  ```
 
-
 #### Deploy metricbeat
 **Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash.
 ```
 kubectl apply -f /home/ec2-user/environment/ant332/metricbeat-deployment.yaml
 ```
-
-
 
 # View Metricbeat data in Kibana
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
@@ -344,30 +366,7 @@ Congratulations! You've configured you're first end-to-end pipeline. You will no
 ***Pro tip:*** On the *top right corner* of Kibana you will find two very useful settings. **Auto-refresh** controls how frequent your dashboard needs to refresh. We recommend setting it to 30 seconds. The next setting labled **last 15 minutes** controls the time-range of the data Kibana will display. When set to 'last 15 minutes', you will only see the most recent 15 minutes of data. You can leave this at the default setting.
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-pro-tip.png)
-# Filebeat 101
-* *Send data to logstahs for parsing*
-* *Review logs via Kibana*
 
-*@Saad*
-
-Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
-
-In this lab we will configure Filebeat to collect *TBD log file* and send the data to logstash.
-
-```
-filebeat.inputs:
-    - type: log
-      symlinks: true
-      paths:
-        - /var/log/containers/*.log
-      processors:
-        - add_kubernetes_metadata:
-            in_cluster: true
-            host: ${NODE_NAME}
-            matchers:
-            - logs_path:
-                logs_path: "/var/log/containers/"s
-```
 
 # Fluentd 101
 *Walk through one Fluentd parsing configuration TBD*
