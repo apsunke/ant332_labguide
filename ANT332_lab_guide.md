@@ -273,7 +273,9 @@ Once the pipeline is ready, we can move to deploying our beats platforms.
 
 Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
 
-In this lab we will configure Filebeat to collect *TBD log file* and send the data to logstash.
+In this lab we will configure Filebeat to collect Kubelet logs and send the data to logstash.
+
+@Saad section on kubelet log type.
 
 ```
 filebeat.inputs:
@@ -288,6 +290,37 @@ filebeat.inputs:
             matchers:
             - logs_path:
                 logs_path: "/var/log/containers/"s
+```
+Navigate to the `filebeat-manifests` directory from under the `ant332/final-deploy` folder using the following command, and substitute the `<POD_IP_OUT_LOGSTASH>` section with the pod IP we saved from Logstash deployment output:
+
+```
+cd filebeat-manifests
+./deploy-filebeat.sh <POD_IP_OUT_LOGSTASH>
+```
+
+Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
+
+You can start the deployment using the following commands:
+```
+chmod +x deploy-filebeat.sh
+./deploy-filebeat.sh
+```
+
+Filebeat deploys by default to the `default` namespace so you can confirm deployment using the following command:
+
+```
+kubectl get pods
+```
+
+The output should look like the following if filebeat has deployed successfully:
+
+```
+TeamRole:~/environment/ant332/final-deploy/filebeat-manifests (master) $ kubectl get pods
+NAME             READY   STATUS    RESTARTS   AGE
+filebeat-977rj   1/1     Running   0          12s
+filebeat-gpd2p   1/1     Running   0          12s
+filebeat-rst4k   1/1     Running   0          12s
+filebeat-tgblm   1/1     Running   0          12s
 ```
 
 # Metricbeat 101
