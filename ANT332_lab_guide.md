@@ -88,15 +88,70 @@ For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana
 **Kibana** is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. We will use Kibana to visualize all the logs and metrics.
 
 # Configure Cloud9 IDE
-*TBD Disable role in settings*
+The owner of a Cloud9 EC2 environment can turn on or off AWS managed temporary credentials for that environment at any time, as follows:
 
-Run the following commands to check if EKS is configured correctly.
+* With the environment open, in the AWS Cloud9 IDE, on the menu bar choose AWS Cloud9, Preferences.
 
-**Intro to kubectl**
+* In the Preferences tab, in the navigation pane, choose AWS Settings, Credentials.
+
+* Use AWS managed temporary credentials to turn AWS managed temporary credentials on or off.
+
+This step is required in order for the workshop to proceed.
+
+Run the following kubectl
+
+**Gain EKS Cluster Access Using kubectl and AWS CLI**
+
+Use following command to enter the folder containing our k8s manifests:
+```
+cd ant332/final-deploy
+```
+Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment:
+```
+chmod +x loadcreds.sh
+source ./loadcreds.sh <CFN_ACCESS_KEY_ID_OUT> <CFN_SECRET_ACCESS_KEY_OUT>
+```
+
+Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
 
 ```
-kubectl get svc
+chmod +x startup.sh
+source ./startup.sh
 ```
+
+Now run the following command to ensure you have access to the EKS cluster:
+```
+kubectl get ns
+```
+
+If you have access the output from this command should display the following namespaces:
+
+```
+TeamRole:~/environment/ant332/final-deploy (master) $ kubectl get ns
+NAME              STATUS   AGE
+default           Active   12d
+kube-node-lease   Active   12d
+kube-public       Active   12d
+kube-system       Active   12d
+```
+
+From this same working directory, navigate and change permissions for the `guestbook` guestbook deployment under `ant332/final-deploy` using the following commands:
+
+```
+cd guestbook
+chmod +x deploy.sh
+```
+
+You can now deploy the official K8s `guestbook` application using the following commands:
+```
+./deploy.sh
+```
+
+Use the following command to see if all pods within the deployment come up correctly:
+```
+kubectl -n guestbook get pods
+```
+
 *TBD you should see the output below*
 @saad
 
@@ -143,12 +198,72 @@ Logstash is an open source data collection engine with real-time pipelining capa
 
 A Logstash pipeline has three key elements **inputs, filters and outputs**. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
 
-In this lab we will built the following pipeline to parse *TBD log* and output to Amazon ES.
-@Saad
+In this lab we built the following pipeline to parse *TBD log* and output to Amazon ES.
+```
+    input {
+      beats {
+        port => 5044
+      }
+    }
 
+    filter {
+      if "filebeat" in [tags] {
+        grok {
+            match => {
+                "message" => '(?<timestamp>\S+\s\d+\s\S+)\s(?<hostname>\S+)\s(?<log_message>.*)'
+            }
+            add_tag => [ "parsed_msg" ]
+        }
+        date {
+          match => ["timestamp", "MMM dd HH:mm:ss"]
+          target => "@timestamp"
+          add_tag => [ "parsed_time" ]
+        }
+      }
+    }
+
+
+    output {
+      if "filebeat" in [tags] {
+        elasticsearch {
+          hosts => ["${ES_DOMAIN}"]
+          index => "filebeat.%{+yyyy.MM.dd.HH}"
+        }
+      }
+    }
 ```
-input logstash config details here
+
+This Logstash pipeline listens for logs from filebeat on the worker nodes, parses the incoming log message using a `grok` filter using a regex if the incoming log contains a tag called `filebeat` and then pushes the log as output to our Elasticsearch cluster.
+
+In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file.
+
+We can make changes to this config based on the type of logging we're doing.
+
+@Anoop - decide on whether we're doing an exercise on editing the logstash config.
+
+Navigate to the `logstash-manifests` directory under `ant332/final-deploy` (this should be your current working directory) folder by using the following command:
 ```
+cd logstash-manifests
+```
+
+First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command:
+```
+chmod +x deploy-logstash.sh
+./deploy-logstash.sh https://<ELASTICSEARCH_DOMAIN_ENDPOINT_CFN_OUT>:443
+```
+
+We're only using a single logstash pod for this workshop and this script will output it's pod IP address, which we need to use with our filebeat deployment later so save it.
+
+You can view the pod's readiness state by using the following command to tail the container's logs:
+```
+kubectl -n logstash get pods
+```
+
+Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input:
+```
+kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
+```
+Once the pipeline is ready, we can move to deploying our beats platforms.
 
 # Metricbeat 101
 *TBD review dashboard, deployment steps*
