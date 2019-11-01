@@ -103,6 +103,7 @@ Run the following kubectl
 **Gain EKS Cluster Access Using kubectl and AWS CLI**
 
 Use following command to enter the folder containing our k8s manifests:
+<<<<<<< HEAD:ANT332 lab guide
 ```
 cd ant332/final-deploy
 ```
@@ -134,6 +135,39 @@ kube-node-lease   Active   12d
 kube-public       Active   12d
 kube-system       Active   12d
 ```
+=======
+```
+cd ant332/final-deploy
+```
+Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment:
+```
+chmod +x loadcreds.sh
+source ./loadcreds.sh <CFN_ACCESS_KEY_ID_OUT> <CFN_SECRET_ACCESS_KEY_OUT>
+```
+
+Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
+
+```
+chmod +x startup.sh
+source ./startup.sh
+```
+
+Now run the following command to ensure you have access to the EKS cluster:
+```
+kubectl get ns
+```
+
+If you have access the output from this command should display the following namespaces:
+
+```
+TeamRole:~/environment/ant332/final-deploy (master) $ kubectl get ns
+NAME              STATUS   AGE
+default           Active   12d
+kube-node-lease   Active   12d
+kube-public       Active   12d
+kube-system       Active   12d
+```
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
 
 From this same working directory, navigate and change permissions for the `guestbook` guestbook deployment under `ant332/final-deploy` using the following commands:
 
@@ -253,6 +287,7 @@ chmod +x deploy-logstash.sh
 ```
 
 We're only using a single logstash pod for this workshop and this script will output it's pod IP address, which we need to use with our filebeat deployment later so save it.
+<<<<<<< HEAD:ANT332 lab guide
 
 You can view the pod's readiness state by using the following command to tail the container's logs:
 ```
@@ -313,8 +348,73 @@ kubectl get pods
 ```
 
 The output should look like the following if filebeat has deployed successfully:
+=======
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
+
+You can view the pod's readiness state by using the following command to tail the container's logs:
+```
+<<<<<<< HEAD:ANT332 lab guide
+=======
+kubectl -n logstash get pods
+```
+
+Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input:
+```
+kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
+```
+Once the pipeline is ready, we can move to deploying our beats platforms.
+
+# Filebeat 101
+* *Send data to logstahs for parsing*
+* *Review logs via Kibana*
+
+*@Saad*
+
+Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
+
+In this lab we will configure Filebeat to collect Kubelet logs and send the data to logstash.
+
+@Saad section on kubelet log type.
 
 ```
+filebeat.inputs:
+    - type: log
+      symlinks: true
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"s
+```
+Navigate to the `filebeat-manifests` directory from under the `ant332/final-deploy` folder using the following command, and substitute the `<POD_IP_OUT_LOGSTASH>` section with the pod IP we saved from Logstash deployment output:
+
+```
+cd filebeat-manifests
+./deploy-filebeat.sh <POD_IP_OUT_LOGSTASH>
+```
+
+Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
+
+You can start the deployment using the following commands:
+```
+chmod +x deploy-filebeat.sh
+./deploy-filebeat.sh
+```
+
+Filebeat deploys by default to the `default` namespace so you can confirm deployment using the following command:
+
+```
+kubectl get pods
+```
+
+The output should look like the following if filebeat has deployed successfully:
+
+```
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
 TeamRole:~/environment/ant332/final-deploy/filebeat-manifests (master) $ kubectl get pods
 NAME             READY   STATUS    RESTARTS   AGE
 filebeat-977rj   1/1     Running   0          12s
@@ -650,3 +750,114 @@ Great job setting the environment! You now have logs and metrics flowing in Amaz
 The last portion of this workshop is called **Mystery Hunt**. We'll ask you to run mystery scripts that make changes to your environment, you'll then need to investigate and find root cause. We'll have hints along the way to guide you.
 
 Kibana is all you need for this exercise, it has all the data including visualizations.
+
+
+# Mystery hunt 1
+
+Your application developers have raised a ticket that you have to investigate. They are unable to reach their throughput goals despite scaling their application pods. What could be the issue?
+
+#### Simulate the scenario
+**Run** the command below to simulate the scenario
+
+```
+curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_1.sh && ./mystery_script_1.sh
+```
+#### Hint
+
+**[Metricbeat Kubernetes] Overview ECS** Kibana dashboard is a great place to start to get a quick high level overview of your Kubernetes environment.
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mb-kibana-dashboard.png)
+
+
+#### Mystery Solved
+The mystery_script_1.sh scaled up the frontend deployment to 100 replicas. However due to resource constraints the current EKS cluster can only deploy 39 pods across all deployments. So, the rest of the scale up requests are queued for future deployment when resources become available. You will notice a high number of unavailable pods frontend deployment has the highest number of unavailable pods. One possible resolution is to provision more worker nodes to add more capacity.
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery-1-solved.png)
+
+**(Optional)**
+
+If you'd like to experiment in real-time, execute the following command to scale down frontend to 2 replicas, you should see this reflect in you Kibana dashboard instantly.
+
+```
+kubectl scale --replicas=2 deployment/frontend -n guestbook
+```
+
+# Mystery hunt 2
+Your customers have complained that Guestbook website is throwing 404 not found errors. Investigate and identify the root cause.
+
+#### Simulate the scenario
+**Run** the following command and copy ``` Loadbalancer Ingress``` value.
+
+```
+kubectl describe svc frontend -n guestbook
+```
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mysteryhunt-2-setup.png)
+
+**Replace** the URL below and run the following command to export your guestbook URL into an environment variable
+
+```
+export URL3=your-load-balancer-url.eu-west-1.elb.amazonaws.com
+```
+
+**Run** the command below to simulate the scenario
+```
+curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_2.sh && chmod +x mystery_script_2.sh && ./mystery_script_2.sh $URL3
+
+```
+
+
+#### Hint
+
+Remeber we created ```apache-``` index? It will have useful information to troubleshoot.
+
+
+#### Mystery Solved
+
+Open Kibana, Double-click Discover tab. Then choose apache-* index pattern and search for 404 errors. You will see all the logs records that contain 404 errors.
+
+If you expand the the logs lines you will notice that 404 errors are being generated by paths that do not exist such as ```/index/menu.html``` and ```/index/contactus.html```
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery-hunt-2-hint-1.png)
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery-hunt-2-hint-2.png)
+
+
+**(Optional)**
+
+We’ve built a custom visualization that will make this data more readable. Click on the deep link below to download the visualization and unzip the file.
+
+**Download Visualization**
+
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/apache-http-request.json.zip
+
+**Watch this video on how to import visualization in Kibana**
+
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-import-video.mp4
+
+# Mystery Hunt 3
+
+Your development team has reported that redis performance has degraded over time. They suspect memory fragmentation may be the root cause. They've asked for an easy way to get visibility into trend of memory fragmentation over a period of time.
+
+#### Hint
+Remember we created the ***redis-*** index? Examine the contents of this index and build a visualization in Kibana.
+
+
+
+#### Mystery Solved
+The ***redis-*** index contains all the key redis metrics  collected by flunetbit. The ```mem_fragmentation_ratio``` field gives the ratio of memory used as seen by the operating system to memory allocated by Redis.
+
+Tracking fragmentation ratio is important for understanding your Redis instance’s performance. A fragmentation ratio greater than 1 indicates fragmentation is occurring. A ratio in excess of 1.5 indicates excessive fragmentation, with your Redis instance consuming 150% of the physical memory it requested. A fragmentation ratio below 1 tells you that Redis needs more memory than is available on your system, which leads to swapping. Swapping to disk will cause significant increases in latency (see used memory). Ideally, the operating system would allocate a contiguous segment in physical memory, with a fragmentation ratio equal to 1 or slightly greater.
+
+**Watch this video to create memory fragmentation visualization**
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-mem-fragmentation-video.mp4
+
+**(Optional)**
+We've built a custom dashboard to monitor redis metrics. Follow the steps below to import this dashboard and explore.
+
+**Download and unzip dashboard and visualization**
+
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-dashboard-visualization.zip
+
+**Watch this video to import visualizations into Kibana**
+https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-vis-import.mp4
