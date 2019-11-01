@@ -103,6 +103,7 @@ Run the following kubectl
 **Gain EKS Cluster Access Using kubectl and AWS CLI**
 
 Use following command to enter the folder containing our k8s manifests:
+<<<<<<< HEAD:ANT332 lab guide
 ```
 cd ant332/final-deploy
 ```
@@ -134,6 +135,39 @@ kube-node-lease   Active   12d
 kube-public       Active   12d
 kube-system       Active   12d
 ```
+=======
+```
+cd ant332/final-deploy
+```
+Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment:
+```
+chmod +x loadcreds.sh
+source ./loadcreds.sh <CFN_ACCESS_KEY_ID_OUT> <CFN_SECRET_ACCESS_KEY_OUT>
+```
+
+Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
+
+```
+chmod +x startup.sh
+source ./startup.sh
+```
+
+Now run the following command to ensure you have access to the EKS cluster:
+```
+kubectl get ns
+```
+
+If you have access the output from this command should display the following namespaces:
+
+```
+TeamRole:~/environment/ant332/final-deploy (master) $ kubectl get ns
+NAME              STATUS   AGE
+default           Active   12d
+kube-node-lease   Active   12d
+kube-public       Active   12d
+kube-system       Active   12d
+```
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
 
 From this same working directory, navigate and change permissions for the `guestbook` guestbook deployment under `ant332/final-deploy` using the following commands:
 
@@ -253,6 +287,7 @@ chmod +x deploy-logstash.sh
 ```
 
 We're only using a single logstash pod for this workshop and this script will output it's pod IP address, which we need to use with our filebeat deployment later so save it.
+<<<<<<< HEAD:ANT332 lab guide
 
 You can view the pod's readiness state by using the following command to tail the container's logs:
 ```
@@ -313,8 +348,73 @@ kubectl get pods
 ```
 
 The output should look like the following if filebeat has deployed successfully:
+=======
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
+
+You can view the pod's readiness state by using the following command to tail the container's logs:
+```
+<<<<<<< HEAD:ANT332 lab guide
+=======
+kubectl -n logstash get pods
+```
+
+Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input:
+```
+kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
+```
+Once the pipeline is ready, we can move to deploying our beats platforms.
+
+# Filebeat 101
+* *Send data to logstahs for parsing*
+* *Review logs via Kibana*
+
+*@Saad*
+
+Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
+
+In this lab we will configure Filebeat to collect Kubelet logs and send the data to logstash.
+
+@Saad section on kubelet log type.
 
 ```
+filebeat.inputs:
+    - type: log
+      symlinks: true
+      paths:
+        - /var/log/containers/*.log
+      processors:
+        - add_kubernetes_metadata:
+            in_cluster: true
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"s
+```
+Navigate to the `filebeat-manifests` directory from under the `ant332/final-deploy` folder using the following command, and substitute the `<POD_IP_OUT_LOGSTASH>` section with the pod IP we saved from Logstash deployment output:
+
+```
+cd filebeat-manifests
+./deploy-filebeat.sh <POD_IP_OUT_LOGSTASH>
+```
+
+Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
+
+You can start the deployment using the following commands:
+```
+chmod +x deploy-filebeat.sh
+./deploy-filebeat.sh
+```
+
+Filebeat deploys by default to the `default` namespace so you can confirm deployment using the following command:
+
+```
+kubectl get pods
+```
+
+The output should look like the following if filebeat has deployed successfully:
+
+```
+>>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
 TeamRole:~/environment/ant332/final-deploy/filebeat-manifests (master) $ kubectl get pods
 NAME             READY   STATUS    RESTARTS   AGE
 filebeat-977rj   1/1     Running   0          12s
