@@ -161,7 +161,7 @@ In this lab we have deployed Amazon ES with **VPC access** as its more secure. T
 
 To eshtablish an SSH tunnel, you need the following three key details. We will be using these details throughout the workshop, we **highly recommend** you make a note of it and keep it handy.
 
-**Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
+## Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
 
 You can find this under Services -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy IP address next to ```OutputFromNestedBastionStack``` -> Copy Amazon ES endpoint under ```OutputFromNestedESStack```
 
@@ -232,7 +232,7 @@ create a tunnel with a local port
 of 9200 and a destination found in the value of this param as seen below.
 
 
-**Step 4: Connect to Kibana with your local browser**
+## Step 4: Connect to Kibana with your local browser
 
 Click on this deep link to open Kibana in local browser on your laptop and on the welcome screen click **Explore on my own**
 
