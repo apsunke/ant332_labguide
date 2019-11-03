@@ -76,8 +76,6 @@ We will use a simple 'Guestbook' application, which is a multi-tier web applicat
 * Multiple replicated Redis instances to serve reads
 * Multiple web frontend instances
 
-
-
 ![alt text](
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
 # Getting familiar with today's lab environment
@@ -165,7 +163,7 @@ To eshtablish an SSH tunnel, you need the following three key details. We will b
 
 **Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
 
-You can find this under Services -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy IP address next to ```OutputFromNestedBastionStack``` -> Copy Amazon ES endpoint under ```OutputFromNestedNetworkStack```
+You can find this under Services -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy IP address next to ```OutputFromNestedBastionStack``` -> Copy Amazon ES endpoint under ```OutputFromNestedESStack```
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
 
@@ -176,12 +174,63 @@ You can find this under Services -> Cloudformation -> Click on the bottom most s
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step4.png)
 
 
-**Step 2: SSH key file for Bastion host**
+## Step 2: SSH key file for Bastion host**
+You can find the name of your private key's S3 bucket by -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy S3 bucket name next to ```BastionHostPrivateKeyBucket```
 
-**Step 3: Establish SSH tunnel**
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
 
-@saad windows and mac laptop
-*TBD Instructions for SSH tunnel*
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step3.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_200.png)
+
+Now we need to download the private key for our bastion host from this S3 bucket. Use the following steps by going to the S3 console:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_300.png)
+
+Then search for our previously copied bucket name:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_400.png)
+
+Click on the bucket name in order to open it and you will see our private key file:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_600.png)
+
+Click on the `bastion.pem` file and you can then download the key to your local machine by clicking the resulting `Download` button as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_700.png)
+
+## Step 3: Establish SSH tunnel
+
+In order to load Kibana on your laptop’s browser, you need to send the traffic to your Amazon ES domain. Since the domain is in your VPC, and your Amazon ES cluster is in a private subnet, you must port forward to our bastion box and then access Kibana.
+
+You need the public IP address of the bastion host and endpoint address of the Elasticsearch deployment which you copied as part of step 1.
+
+**MacOS and Linux:**
+
+In your MacOS or Linux terminal run the following command:
+
+```
+ssh -i /path/to/your/key.pem -N -L 9200:<ES_ENDPOINT_ADDRESS>:80 ec2-user@<BASTION_HOST_IP>
+```
+
+Replace `<ES_ENDPOINT_ADDRESS>` and `<BASTION_HOST_IP>` with the respective values copied during Step 1.
+
+Be sure to use the location of your pem file (created in prior instructions for the lab) as the replacement for the italic, underlined value (/path/to/your/key.pem).
+
+**Windows:**
+
+Launch PuTTY and create a new session. Use the IP address from the CloudFormation template for input. Give the session a name since we will want to save this in case we lose the session (low laptop
+battery, etc).
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_800.png)
+
+Expand the SSH section and navigate to the Tunnel.
+
+create a tunnel with a local port
+of 9200 and a destination found in the value of this param as seen below.
+
 
 **Step 4: Connect to Kibana with your local browser**
 
@@ -220,22 +269,34 @@ In this lab we built the following pipeline to parse *TBD log* and output to Ama
           add_tag => [ "parsed_time" ]
         }
       }
+      else if "metricbeat" in [tags] {
+        date {
+          match => ["timestamp", "MMM dd HH:mm:ss"]
+          target => "@timestamp"
+          add_tag => [ "parsed_time" ]
+        }
+      }
     }
-
 
     output {
       if "filebeat" in [tags] {
         elasticsearch {
           hosts => ["${ES_DOMAIN}"]
-          index => "filebeat.%{+yyyy.MM.dd.HH}"
+          index => "filebeat-%{+yyyy.MM.dd.HH}"
+        }
+      }
+      else if "metricbeat" in [tags] {
+        elasticsearch {
+          hosts => ["${ES_DOMAIN}"]
+          index => "metricbeat-%{+yyyy.MM.dd.HH}"
         }
       }
     }
 ```
 
-This Logstash pipeline listens for logs from filebeat on the worker nodes, parses the incoming log message using a `grok` filter using a regex if the incoming log contains a tag called `filebeat` and then pushes the log as output to our Elasticsearch cluster.
+This Logstash pipeline listens for logs from filebeat on the worker nodes and metricbeat on both workers nodes and pods, parses the incoming filebeat log message using a `grok` filter as a regex. Metricbeat logs don't contain log messages so we are not using any field parsing for them. If the incoming log contains tags called either `filebeat` or `metricbeat` it pushes the log to the appropriate index in Elasticsearch as output.
 
-In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file.
+In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file. This is done for both filebeat and metricbeat logs.
 
 We can make changes to this config based on the type of logging we're doing.
 
@@ -246,14 +307,29 @@ Navigate to the `logstash-manifests` directory under `ant332/final-deploy` (this
 cd logstash-manifests
 ```
 
-First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command:
+First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command (read parameter replacement instructions following this code snippet BEFORE you run these commands):
 ```
 chmod +x deploy-logstash.sh
 ./deploy-logstash.sh https://<ELASTICSEARCH_DOMAIN_ENDPOINT_CFN_OUT>:443
 ```
 
-We're only using a single logstash pod for this workshop and this script will output it's pod IP address, which we need to use with our filebeat deployment later so save it.
-<<<<<<< HEAD:ANT332 lab guide
+Replace the `<ELASTICSEARCH_DOMAIN_ENDPOINT_CFN_OUT>` with the Elasticsearch endpoint address from our Cloudformation parent stack output as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step3.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step4.png)
+
+Copy the `vpc-aes-lab-domain-...` value, this is our Elasticsearch address and replace `<ELASTICSEARCH_DOMAIN_ENDPOINT_CFN_OUT>` with this address.
+
+You can now run the aforementioned commands.
+
+**SAVE THE POD IP the ./deploy-logstash.sh SCRIPT PRODUCES AS WE WILL BE NEEDING IT FOR LATER STEPS**
+
+We're only using a single logstash pod for this lab.
 
 You can view the pod's readiness state by using the following command to tail the container's logs:
 ```
@@ -267,10 +343,6 @@ kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
 Once the pipeline is ready, we can move to deploying our beats platforms.
 
 # Filebeat 101
-* *Send data to logstahs for parsing*
-* *Review logs via Kibana*
-
-*@Saad*
 
 Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
 
@@ -378,9 +450,47 @@ deployment.apps/kube-state-metrics created
 
 #### Deploy metricbeat
 **Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash.
+
+Navigate to the `metricbeat` directory from under the `ant332/final-deploy` folder using the following command:
 ```
-kubectl apply -f /home/ec2-user/environment/ant332/metricbeat-deployment.yaml
+cd metricbeat
 ```
+From within this directory, execute the following commands one after the other to deploy metricbeat to send data to Logstash (before running command read instructions following the code snippet to replace deployment script command line arguments with correct values):
+
+```
+chmod +x deploy-metricbeat.sh
+./deploy-metricbeat.sh <LOGSTASH_POD_IP> <KIBANA_ADDRESS_FROM_CFN>
+```
+
+Replace `<LOGSTASH_POD_IP>` with the logstash pod IP we saved earlier from our logstash deployment output.
+
+Replace `<KIBANA_ADDRESS_FROM_CFN>` with Elasticsearch address taken from our Cloudformation Parent Stack output as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step3.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step4.png)
+
+Copy the `vpc-aes-lab-domain-...` value, this is our Elasticsearch address and replace `<KIBANA_ADDRESS_FROM_CFN>` with this address.
+
+You can run the following command to see if the metricbeat pods started correctly:
+
+```
+kubectl -n kube-system get pods | grep metricbeat
+```
+Output should look like the following if the pods started successfully:
+```
+
+```
+You can get container logs as well if you want to confirm events are being published to Logstash by using the following command:
+```
+kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
+```
+
+Replace `<METRICBEAT_POD_NAME>` with the pod IP address.
 
 # View Metricbeat data in Kibana
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
@@ -407,8 +517,6 @@ Congratulations! You've configured you're first end-to-end pipeline. You will no
 *Walk through one Fluentd parsing configuration TBD*
 
 Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
-
-
 
 ![alt](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/fluentd-architecture.png)
 
@@ -583,52 +691,6 @@ Repeat the previous step again to create an index pattern for **apache-** index.
 Click Mangement tab -> Index Patterns -> Create Index -> ***apache-**** -> ***@timestamp*** -> Create Index Pattern
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/apache-index.png)
-
-Lets deploy the *Guestbook* application so we can start ingesting logs and metrics.
-
-# Deploy Guestbook application
-
-**Run** this command to deploy the *Guestbook* application. This will deploy frontend, redis master and redis slaves.
-
-```
- kubectl apply -f guestbook/redis-master.yml &&
- kubectl apply -f guestbook/redis-master-service.yaml &&
- kubectl apply -f guestbook/redis-slave.yml &&
- kubectl apply -f guestbook/redis-slave-service.yaml &&
- kubectl apply -f guestbook/frontend-deployment.yaml &&
- kubectl apply -f guestbook/frontend-service.yaml
-```
-
-**Run** this command to verify Guestbook deployed successfully
-
-```
-kubectl get all -n guestbook
-```
-You should see all the pods, services and deplyments running similar to the example below
-
-```
-pod/frontend-69859f6796-f4nrp      1/1     Running   0          26m
-pod/frontend-69859f6796-ktzhv      1/1     Running   0          26m
-pod/frontend-69859f6796-l2s9m      1/1     Running   0          26m
-pod/redis-master-596696dd4-8g6n9   1/1     Running   0          26m
-pod/redis-slave-96685cfdb-9dv57    1/1     Running   0          26m
-pod/redis-slave-96685cfdb-xgmbr    1/1     Running   0          26m
-NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
-service/frontend       LoadBalancer   172.20.125.197   <pending>     443:31112/TCP   26m
-service/redis-master   ClusterIP      172.20.195.144   <none>        6379/TCP        26m
-service/redis-slave    ClusterIP      172.20.248.13    <none>        6379/TCP        26m
-
-NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/frontend       3/3     3            3           26m
-deployment.apps/redis-master   1/1     1            1           26m
-deployment.apps/redis-slave    2/2     2            2           26m
-
-NAME                                     DESIRED   CURRENT   READY   AGE
-replicaset.apps/frontend-69859f6796      3         3         3       26m
-replicaset.apps/redis-master-596696dd4   1         1         1       26m
-replicaset.apps/redis-slave-96685cfdb    2         2         2       26m
-```
-
 
 # Explore in Kibana
 Lets explore the log data in Kibana. Fluentd is configured to output all the logs into **kubernetes-*** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
