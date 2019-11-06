@@ -115,9 +115,6 @@ Lets setup Cloud9 and get started. Cloud9 normally manages IAM credentials dynam
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-4.png)
 
 
-
-
-
 **Gain EKS Cluster Access Using kubectl and AWS CLI**
 
 Use following command to enter the folder containing our k8s manifests:
@@ -168,9 +165,7 @@ Use the following command to see if all pods within the deployment come up corre
 kubectl -n guestbook get pods
 ```
 
-Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command and copy ``` Loadbalancer Ingress``` value.
-
-
+Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command and copy ```Loadbalancer Ingress``` value.
 ```
 kubectl describe svc frontend -n guestbook
 ```
@@ -179,12 +174,11 @@ kubectl describe svc frontend -n guestbook
 
 Lets load ```<Loadbalancer Ingress>``` into an environment variable for future use.
 
-
 ```
 export URL3=<Loadbalancer Ingress>
 ```
 
-Now open a broswer and paste ``` Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter.
+Now open a broswer and paste ```Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter.
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
 
@@ -197,10 +191,9 @@ In this lab we have deployed Amazon ES with **VPC access** as its more secure. T
 
 To eshtablish an SSH tunnel, you need the following three key details. We will be using these details throughout the workshop, we **highly recommend** you make a note of it and keep it handy.
 
+
 ## Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL
 You've already noted this down in step 1 of the workshop. ```OutputFromNestedBastionStack``` refers to the public IP address for bastion host and ```OutputFromNestedESStack``` refers to the Amazon ES domain endpoint
-
-
 
 ## Step 2: SSH key file for Bastion host
 You can find the name of your private key's S3 bucket by -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy S3 bucket name next to ```BastionHostPrivateKeyBucket```
@@ -237,7 +230,6 @@ chmod 400 bastion.pem
 ssh -i bastion.pem -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromNestedBastionStack>
 ```
 
-
 **Windows:**
 
 Launch PuTTY and create a new session. Use the IP address from the CloudFormation template for input. Give the session a name since we will want to save this in case we lose the session (low laptop
@@ -247,14 +239,11 @@ battery, etc).
 
 Expand the SSH section and navigate to the Tunnel.
 
-create a tunnel with a local port
-of 9200 and a destination found in the value of this param as seen below.
-
+create a tunnel with a local port of 9200 and a destination found in the value of this param as seen below.
 
 ## Step 4: Connect to Kibana with your local browser
 
 Open this link in deep link to open Kibana in local browser on your laptop and on the welcome screen click **Explore on my own**
-
 
 (Open new tab)
 
@@ -325,12 +314,13 @@ cd /home/ec2-user/environment/ant332/final-deploy/logstash-manifests
 ```
 
 First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step.
+
 ```
 chmod +x deploy-logstash.sh
 ./deploy-logstash.sh https://<OutputFromNestedESStack>:443
 ```
 
-Note down the Logstash IP address, going forward we will refer to this as ```logsash_ip_address```
+Note down the Logstash IP address, going forward we will refer to this as `logsash_ip_address`
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/logstash-ip.png)
 
@@ -367,7 +357,7 @@ filebeat.inputs:
             - logs_path:
                 logs_path: "/var/log/containers/"
     logging.level: debug
-```
+
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
 You can start the deployment using the following command and substituting the ` <logsash_ip_address>` section with the pod IP we saved from Logstash deployment output:
@@ -378,8 +368,7 @@ chmod +x deploy-filebeat.sh
 ./deploy-filebeat.sh <logsash_ip_address>
 ```
 
-
- You can confirm deployment using the following command:
+You can confirm deployment using the following command:
 
 ```
 kubectl get pods
@@ -426,7 +415,7 @@ Note: Metricbeat gets its key metrics from a internal kubernetes service called 
 **Run** the following command to install kube-state-metricsets
 
 ```
-cd /home/ec2-user/environment/ant332/final-deploy/kube-state-metrics&&
+cd /home/ec2-user/environment/ant332/final-deploy/kube-state-metrics &&
 kubectl apply -f kube-state-metrics-cluster-role-binding.yaml &&
 kubectl apply -f kube-state-metrics-service-account.yaml &&
 kubectl apply -f kube-state-metrics-cluster-role.yaml &&
@@ -448,6 +437,7 @@ deployment.apps/kube-state-metrics created
  ```
 
 #### Deploy metricbeat
+
 **Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` and `OutputFromNestedESStack` with corresponding values from your environment.
 
 ```
@@ -456,18 +446,21 @@ chmod +x deploy-metricbeat.sh
 ./deploy-metricbeat.sh <logsash_ip_address> <OutputFromNestedESStack>:443
 ```
 
-
 You can run the following command to see if the metricbeat pods started correctly:
 
 ```
 kubectl -n kube-system get pods | grep metricbeat
 ```
+Output should look like the following if the pods started successfully:
+```
 
-You can get container logs as well if you want to confirm events are being published to Logstash by using the following command. Replace `<METRICBEAT_POD_NAME>` with the pod IP address.
-
+```
+You can get container logs as well if you want to confirm events are being published to Logstash by using the following command:
 ```
 kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
 ```
+
+Replace `<METRICBEAT_POD_NAME>` with the pod pod's name you got in the previous command.
 
 
 # View Metricbeat data in Kibana
@@ -598,9 +591,6 @@ for i in $( (printf 'info\r\n';) | nc -w 1 redis 6379 | grep ':'); do
  echo "{\"$key\": \"$value\"}"
 done
 ```
-
-
-
 
 # Deploying Fluentd and Fluentbit
 
