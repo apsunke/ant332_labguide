@@ -38,7 +38,7 @@ This level involves everything at the Kubernetes level including pods, container
 
 In this lab we will collect data from both these levels. There's multilple ways to capture and process this data. Lets take a look at two most popular way our customers love to do it.
 
-# Data pipline using Beats and Logstsah
+# Data pipeline option 1:  Beats and Logstsah
 In this lab will discuss two different pipelines involving different technologies to collect the metrics. You can use either in production depending on your needs.
 
 Beats is a family of popular open-source data collection agents. Logstash is a popular open-source,server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then pushes the result to various destinations. Logstash acts at the parsing and buffering layer de-coupling the source and the destination. For this lab, we will deploy multiple Logstash instances in an Auto Scaling Group that scale based on resource needs.
@@ -49,7 +49,7 @@ Beats is a family of popular open-source data collection agents. Logstash is a p
 #### Filebeat -> Logstash -> Amazon ES
 Filebeat is a light-weight agent that can tail log files and push the data to Logstash.
 
-# Data pipline using Fluentd and Fluentbit
+# Data pipeline option 2: Fluentd and Fluentbit
 
 Similarly to the previous pipeline, Fluentd is another popular open-source alternative to collect metrics and logs. Fluentbit is part of the same family of product and acts as a more light-weight forwarder.
 
@@ -61,13 +61,23 @@ Fluentd can act as both the data collector and the data parser. We will define v
 
 
 # Let the lab begin!
-@Saad
 In order to save time, we have already pre-deployed the environment for you. You account will have the following resources
 
 * AWS Cloud9 IDE environment (this is where you'll spend the most time for this lab)
 * Amazon ES domain
 * Amazon EKS Cluster, API server, worker nodes
 * Bastion host (Amazon EC2 instance) with SSH key
+
+Follow the instructions below to note down information such as access key, IP address and Amazon Elasticsearch endpoints. We'll refer to these throught the workshop by their key name, for example ```OutputFromNestedESStack``` will refer to your Amazon ES endpoint.
+
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-1.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-2.png)
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-3.png)
+
+
 
 # What we will be monitoring today
 We will use a simple 'Guestbook' application, which is a multi-tier web application using Kubernetes and Docker. This example consists of a guestbook application with the following components:
@@ -76,10 +86,8 @@ We will use a simple 'Guestbook' application, which is a multi-tier web applicat
 * Multiple replicated Redis instances to serve reads
 * Multiple web frontend instances
 
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
 
-
-![alt text](
-https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
 # Getting familiar with today's lab environment
 For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana. We recommend keeping both these open in your broswer as there will significant forth.
 
@@ -87,8 +95,13 @@ For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana
 
 **Kibana** is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. We will use Kibana to visualize all the logs and metrics.
 
+
+
 # Configure Cloud9 IDE
-The owner of a Cloud9 EC2 environment can turn on or off AWS managed temporary credentials for that environment at any time, as follows:
+
+**AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. We will run all our commands from here.
+
+Lets setup Cloud9 and get started. Cloud9 normally manages IAM credentials dynamically. This isn’t currently compatible with the EKS IAM authentication, so we will disable it and rely on the IAM role instead.**This step is a required step for the rest of the workshop.**
 
 * With the environment open, in the AWS Cloud9 IDE, on the menu bar choose AWS Cloud9, Preferences.
 
@@ -96,21 +109,25 @@ The owner of a Cloud9 EC2 environment can turn on or off AWS managed temporary c
 
 * Use AWS managed temporary credentials to turn AWS managed temporary credentials on or off.
 
-This step is required in order for the workshop to proceed.
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-1.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-2.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-3.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-4.png)
 
-Run the following kubectl
+
+
+
 
 **Gain EKS Cluster Access Using kubectl and AWS CLI**
 
 Use following command to enter the folder containing our k8s manifests:
-<<<<<<< HEAD:ANT332 lab guide
 ```
-cd ant332/final-deploy
+cd /home/ec2-user/environment/ant332/final-deploy
 ```
-Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment:
+Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment. Replace ```<OutputCloud9AdminAccessKeyID>``` and ``` <OutputCloud9AdminSecretAccessKey>``` with corresponding values from your environment.
 ```
 chmod +x loadcreds.sh
-source ./loadcreds.sh <CFN_ACCESS_KEY_ID_OUT> <CFN_SECRET_ACCESS_KEY_OUT>
+source ./loadcreds.sh <OutputCloud9AdminAccessKeyID> <OutputCloud9AdminSecretAccessKey>
 ```
 
 Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
@@ -135,49 +152,14 @@ kube-node-lease   Active   12d
 kube-public       Active   12d
 kube-system       Active   12d
 ```
-=======
-```
-cd ant332/final-deploy
-```
-Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment:
-```
-chmod +x loadcreds.sh
-source ./loadcreds.sh <CFN_ACCESS_KEY_ID_OUT> <CFN_SECRET_ACCESS_KEY_OUT>
-```
 
-Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
+# Deploy guestbook application
 
-```
-chmod +x startup.sh
-source ./startup.sh
-```
-
-Now run the following command to ensure you have access to the EKS cluster:
-```
-kubectl get ns
-```
-
-If you have access the output from this command should display the following namespaces:
-
-```
-TeamRole:~/environment/ant332/final-deploy (master) $ kubectl get ns
-NAME              STATUS   AGE
-default           Active   12d
-kube-node-lease   Active   12d
-kube-public       Active   12d
-kube-system       Active   12d
-```
->>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
-
-From this same working directory, navigate and change permissions for the `guestbook` guestbook deployment under `ant332/final-deploy` using the following commands:
+**Run** the following command to setup and delpoy guestbook application deployment.
 
 ```
 cd guestbook
 chmod +x deploy.sh
-```
-
-You can now deploy the official K8s `guestbook` application using the following commands:
-```
 ./deploy.sh
 ```
 
@@ -186,8 +168,26 @@ Use the following command to see if all pods within the deployment come up corre
 kubectl -n guestbook get pods
 ```
 
-*TBD you should see the output below*
-@saad
+Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command and copy ``` Loadbalancer Ingress``` value.
+
+
+```
+kubectl describe svc frontend -n guestbook
+```
+
+![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mysteryhunt-2-setup.png)
+
+Lets load ```<Loadbalancer Ingress>``` into an environment variable for future use.
+
+
+```
+export URL3=<Loadbalancer Ingress>
+```
+
+Now open a broswer and paste ``` Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter.
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
+
 
 # Configure Kibana
 
@@ -197,42 +197,82 @@ In this lab we have deployed Amazon ES with **VPC access** as its more secure. T
 
 To eshtablish an SSH tunnel, you need the following three key details. We will be using these details throughout the workshop, we **highly recommend** you make a note of it and keep it handy.
 
-**Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL**
-
-You can find this under Services -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy IP address next to ```OutputFromNestedBastionStack``` -> Copy Amazon ES endpoint under ```OutputFromNestedNetworkStack```
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step1.png)
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step2.png)
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step3.png)
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion-step4.png)
+## Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL
+You've already noted this down in step 1 of the workshop. ```OutputFromNestedBastionStack``` refers to the public IP address for bastion host and ```OutputFromNestedESStack``` refers to the Amazon ES domain endpoint
 
 
-**Step 2: SSH key file for Bastion host**
 
-**Step 3: Establish SSH tunnel**
+## Step 2: SSH key file for Bastion host
+You can find the name of your private key's S3 bucket by -> Cloudformation -> Click on the bottom most stack -> go to Outputs -> Copy S3 bucket name next to ```BastionHostPrivateKeyBucket```
 
-@saad windows and mac laptop
-*TBD Instructions for SSH tunnel*
+Now we need to download the private key for our bastion host from this S3 bucket. Use the following steps by going to the S3 console:
 
-**Step 4: Connect to Kibana with your local browser**
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_300.png)
 
-Click on this deep link to open Kibana in local browser on your laptop and on the welcome screen click **Explore on my own**
+Then search for our previously copied bucket name:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_400.png)
+
+Click on the bucket name in order to open it and you will see our private key file:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_600.png)
+
+Click on the `bastion.pem` file and you can then download the key to your local machine by clicking the resulting `Download` button as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_700.png)
+
+## Step 3: Establish SSH tunnel
+
+In order to load Kibana on your laptop’s browser, you need to send the traffic to your Amazon ES domain. Since the domain is in your VPC, and your Amazon ES cluster is in a private subnet, you must port forward to our bastion box and then access Kibana.
+
+You need the public IP address of the bastion host and endpoint address of the Elasticsearch deployment which you copied as part of step 1.
+
+**MacOS and Linux:**
+
+In your **local MacOS or Linux terminal (not Cloud9)** navigate to the folder where you downloaded the .pem file and run the following command. Replace `<OutputFromNestedESStack>` and `<OutputFromNestedBastionStack>` with the respective values copied from the previous step.
+
+```
+cd /path/to/your_bastion_pem_folder
+chmod 400 bastion.pem
+ssh -i bastion.pem -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromNestedBastionStack>
+```
+
+
+**Windows:**
+
+Launch PuTTY and create a new session. Use the IP address from the CloudFormation template for input. Give the session a name since we will want to save this in case we lose the session (low laptop
+battery, etc).
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_800.png)
+
+Expand the SSH section and navigate to the Tunnel.
+
+create a tunnel with a local port
+of 9200 and a destination found in the value of this param as seen below.
+
+
+## Step 4: Connect to Kibana with your local browser
+
+Open this link in deep link to open Kibana in local browser on your laptop and on the welcome screen click **Explore on my own**
+
+
+(Open new tab)
 
 http://localhost:9200/_plugin/kibana
 
 You will will taken to the Kibana home page with many controls and dashboards. Kibana does not have any data yet, so lets switch back to Cloud9 to start emitting data to Amazon ES.
 
 # Deploying Logstash
-*TBD @saad steps to deploy logstash and config files*
 
 Logstash is an open source data collection engine with real-time pipelining capabilities. Logstash can dynamically unify data from disparate sources and normalize the data into destinations of your choice. Cleanse and democratize all your data for diverse advanced downstream analytics and visualization use cases.
 
 A Logstash pipeline has three key elements **inputs, filters and outputs**. The input plugins consume data from a source, the filter plugins modify the data as you specify, and the output plugins write the data to a destination.
 
-In this lab we built the following pipeline to parse *TBD log* and output to Amazon ES.
+In this lab we built the following pipeline to parse filebeat, metricbeat data and output to Amazon ES. This Logstash pipeline (snippet below) listens for logs from filebeat on the worker nodes and metricbeat on both workers nodes and pods, parses the incoming filebeat log message using a `grok` filter as a regex. Metricbeat logs don't contain log messages so we are not using any field parsing for them. If the incoming log contains tags called either `filebeat` or `metricbeat` it pushes the log to the appropriate index in Elasticsearch as output.
+
+In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file. This is done for both filebeat and metricbeat logs.
+
+We can make changes to this config based on the type of logging we're doing.
 ```
     input {
       beats {
@@ -254,158 +294,92 @@ In this lab we built the following pipeline to parse *TBD log* and output to Ama
           add_tag => [ "parsed_time" ]
         }
       }
+      else if "metricbeat" in [tags] {
+        date {
+          match => ["timestamp", "MMM dd HH:mm:ss"]
+          target => "@timestamp"
+          add_tag => [ "parsed_time" ]
+        }
+      }
     }
-
 
     output {
       if "filebeat" in [tags] {
         elasticsearch {
           hosts => ["${ES_DOMAIN}"]
-          index => "filebeat.%{+yyyy.MM.dd.HH}"
+          index => "filebeat-%{+yyyy.MM.dd.HH}"
+        }
+      }
+      else if "metricbeat" in [tags] {
+        elasticsearch {
+          hosts => ["${ES_DOMAIN}"]
+          index => "metricbeat-%{+yyyy.MM.dd.HH}"
         }
       }
     }
 ```
 
-This Logstash pipeline listens for logs from filebeat on the worker nodes, parses the incoming log message using a `grok` filter using a regex if the incoming log contains a tag called `filebeat` and then pushes the log as output to our Elasticsearch cluster.
-
-In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file.
-
-We can make changes to this config based on the type of logging we're doing.
-
-@Anoop - decide on whether we're doing an exercise on editing the logstash config.
-
 Navigate to the `logstash-manifests` directory under `ant332/final-deploy` (this should be your current working directory) folder by using the following command:
 ```
-cd logstash-manifests
+cd /home/ec2-user/environment/ant332/final-deploy/logstash-manifests
 ```
 
-First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command:
+First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step.
 ```
 chmod +x deploy-logstash.sh
-./deploy-logstash.sh https://<ELASTICSEARCH_DOMAIN_ENDPOINT_CFN_OUT>:443
+./deploy-logstash.sh https://<OutputFromNestedESStack>:443
 ```
 
-We're only using a single logstash pod for this workshop and this script will output it's pod IP address, which we need to use with our filebeat deployment later so save it.
-<<<<<<< HEAD:ANT332 lab guide
+Note down the Logstash IP address, going forward we will refer to this as ```logsash_ip_address```
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/logstash-ip.png)
 
 You can view the pod's readiness state by using the following command to tail the container's logs:
 ```
 kubectl -n logstash get pods
 ```
 
-Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input:
+Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input. Once the pipeline is ready, we can move to deploying our beats platforms.
 ```
 kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
 ```
-Once the pipeline is ready, we can move to deploying our beats platforms.
+Use shortcut **ctrl+c** to exit logs output.
 
 # Filebeat 101
-* *Send data to logstahs for parsing*
-* *Review logs via Kibana*
-
-*@Saad*
 
 Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
 
 In this lab we will configure Filebeat to collect Kubelet logs and send the data to logstash.
 
-@Saad section on kubelet log type.
+Kubelet is a process running on every worker nodes inside of a Kubernetes cluster. It is responsible for coordinating the scheduling/termination of containers running on the worker node.
 
 ```
 filebeat.inputs:
     - type: log
-      symlinks: true
       paths:
-        - /var/log/containers/*.log
+        - /var/log/messages
+      tags: ["filebeat"]
       processors:
         - add_kubernetes_metadata:
             in_cluster: true
             host: ${NODE_NAME}
             matchers:
             - logs_path:
-                logs_path: "/var/log/containers/"s
+                logs_path: "/var/log/containers/"
+    logging.level: debug
 ```
-Navigate to the `filebeat-manifests` directory from under the `ant332/final-deploy` folder using the following command, and substitute the `<POD_IP_OUT_LOGSTASH>` section with the pod IP we saved from Logstash deployment output:
-
-```
-cd filebeat-manifests
-./deploy-filebeat.sh <POD_IP_OUT_LOGSTASH>
-```
-
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
-You can start the deployment using the following commands:
+You can start the deployment using the following command and substituting the ` <logsash_ip_address>` section with the pod IP we saved from Logstash deployment output:
+
 ```
+cd /home/ec2-user/environment/ant332/final-deploy/filebeat-manifests
 chmod +x deploy-filebeat.sh
-./deploy-filebeat.sh
+./deploy-filebeat.sh <logsash_ip_address>
 ```
 
-Filebeat deploys by default to the `default` namespace so you can confirm deployment using the following command:
 
-```
-kubectl get pods
-```
-
-The output should look like the following if filebeat has deployed successfully:
-=======
->>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
-
-You can view the pod's readiness state by using the following command to tail the container's logs:
-```
-<<<<<<< HEAD:ANT332 lab guide
-=======
-kubectl -n logstash get pods
-```
-
-Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input:
-```
-kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
-```
-Once the pipeline is ready, we can move to deploying our beats platforms.
-
-# Filebeat 101
-* *Send data to logstahs for parsing*
-* *Review logs via Kibana*
-
-*@Saad*
-
-Filebeat is a lightweight shipper for forwarding and centralizing log data. Installed as an agent on your servers, Filebeat monitors the log files or locations that you specify, collects log events, and forwards them to either to Elasticsearch or Logstash for indexing.
-
-In this lab we will configure Filebeat to collect Kubelet logs and send the data to logstash.
-
-@Saad section on kubelet log type.
-
-```
-filebeat.inputs:
-    - type: log
-      symlinks: true
-      paths:
-        - /var/log/containers/*.log
-      processors:
-        - add_kubernetes_metadata:
-            in_cluster: true
-            host: ${NODE_NAME}
-            matchers:
-            - logs_path:
-                logs_path: "/var/log/containers/"s
-```
-Navigate to the `filebeat-manifests` directory from under the `ant332/final-deploy` folder using the following command, and substitute the `<POD_IP_OUT_LOGSTASH>` section with the pod IP we saved from Logstash deployment output:
-
-```
-cd filebeat-manifests
-./deploy-filebeat.sh <POD_IP_OUT_LOGSTASH>
-```
-
-Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
-
-You can start the deployment using the following commands:
-```
-chmod +x deploy-filebeat.sh
-./deploy-filebeat.sh
-```
-
-Filebeat deploys by default to the `default` namespace so you can confirm deployment using the following command:
+ You can confirm deployment using the following command:
 
 ```
 kubectl get pods
@@ -414,7 +388,6 @@ kubectl get pods
 The output should look like the following if filebeat has deployed successfully:
 
 ```
->>>>>>> 471ce045ed0553e12acb7a57fd01f7a7625ebbc3:ANT332_lab_guide.md
 TeamRole:~/environment/ant332/final-deploy/filebeat-manifests (master) $ kubectl get pods
 NAME             READY   STATUS    RESTARTS   AGE
 filebeat-977rj   1/1     Running   0          12s
@@ -424,7 +397,6 @@ filebeat-tgblm   1/1     Running   0          12s
 ```
 
 # Metricbeat 101
-*TBD review dashboard, deployment steps*
 
 Metricbeat is a lightweight open-source agent to collect system and service statistics.
 Metricbeat consists of modules and metricsets. A Metricbeat module defines the basic logic for collecting data from a specific service, such as Redis, MySQL, and so on. The module specifies details about the service, including how to connect, how often to collect metrics, and which metrics to collect.
@@ -454,6 +426,7 @@ Note: Metricbeat gets its key metrics from a internal kubernetes service called 
 **Run** the following command to install kube-state-metricsets
 
 ```
+cd /home/ec2-user/environment/ant332/final-deploy/kube-state-metrics&&
 kubectl apply -f kube-state-metrics-cluster-role-binding.yaml &&
 kubectl apply -f kube-state-metrics-service-account.yaml &&
 kubectl apply -f kube-state-metrics-cluster-role.yaml &&
@@ -475,38 +448,48 @@ deployment.apps/kube-state-metrics created
  ```
 
 #### Deploy metricbeat
-**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash.
+**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` and `OutputFromNestedESStack` with corresponding values from your environment.
+
 ```
-kubectl apply -f /home/ec2-user/environment/ant332/metricbeat-deployment.yaml
+cd /home/ec2-user/environment/ant332/final-deploy/metricbeat
+chmod +x deploy-metricbeat.sh
+./deploy-metricbeat.sh <logsash_ip_address> <OutputFromNestedESStack>:443
 ```
+
+
+You can run the following command to see if the metricbeat pods started correctly:
+
+```
+kubectl -n kube-system get pods | grep metricbeat
+```
+
+You can get container logs as well if you want to confirm events are being published to Logstash by using the following command. Replace `<METRICBEAT_POD_NAME>` with the pod IP address.
+
+```
+kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
+```
+
 
 # View Metricbeat data in Kibana
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
 
 Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
-Click Mangement tab -> Index Patterns -> Create Index Pattern -> ***metricbeat-**** -> ***@timestamp*** -> Create Index Pattern
+Double click on discover → From the drop down, choose metricbeat
 
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-1.png)
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-2.png)
-
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-mb-step-3.png)
-
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mb-1.png)
 
 Congratulations! You've configured you're first end-to-end pipeline. You will now be able to see all the metricbeat data in real-time.
 
 ***Pro tip:*** On the *top right corner* of Kibana you will find two very useful settings. **Auto-refresh** controls how frequent your dashboard needs to refresh. We recommend setting it to 30 seconds. The next setting labled **last 15 minutes** controls the time-range of the data Kibana will display. When set to 'last 15 minutes', you will only see the most recent 15 minutes of data. You can leave this at the default setting.
 
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-pro-tip.png)
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/auto-refresh.png)
 
 
 # Fluentd 101
 *Walk through one Fluentd parsing configuration TBD*
 
 Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
-
-
 
 ![alt](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/fluentd-architecture.png)
 
@@ -624,12 +607,18 @@ done
 Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by **modifying the url with your Amazon ES endpoint**
 
 ```
-export URL2=vpc-aes-lab-your-amazon-es-endpoint-url
+export URL2=OutputFromNestedESStack
 ```
 
 A popular method to deploy complex applications in Kubernetes is through **Helm**. Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes. We  built a helm chart that deploys both Fluentbit and Fluentd with a single command.
 
-**Run** this command to deploy.
+**Run** this command to setup the deployment files for Fluentd
+
+```
+cd /home/ec2-user/environment/ant332 && unzip deploy.zip && cd deploy
+```
+
+**Run** this command to deploy Fluetnd and Fluentbit
 ```
 helm upgrade -i --namespace=logging --set elasticsearch.host=$URL2 fluentd-elasticsearch fluentd-elasticsearch
 ```
@@ -665,6 +654,8 @@ Click Mangement tab -> Index Patterns -> Create Index -> ***kubernetes-**** -> *
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step4.png)
 
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/choose-timestamp.png)
+
 Kibana is now fully setup to start visualizing Kubernetes logs. You can go to the *Discover* tab on the left to start exploring the data.
 
 # Configure Kibana for redis index
@@ -677,56 +668,22 @@ Click Mangement tab -> Index Patterns -> Create Index -> ***redis-**** -> ***@ti
 
 
 # Configure Kibana for apache index
-Repeat the previous step again to create an index pattern for **apache-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Ever since we deployed Fluentd to collect apache logs, there hasn't been any requests to the guestbook application. So there are no access logs yet to collect. In order to generate access logs, lets open the guestbook application in our browser again and add a couple more entries. Fluentd will pick up the logs right-away and start pushing to Amazon ES.  **Run** the following command and copy ``` Loadbalancer Ingress``` value.
+
+```
+kubectl describe svc frontend -n guestbook
+```
+
+Now open a broswer and paste ``` Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple more guest names and hit enter.
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
+
+Repeat the previous step again to create an index pattern for **apache-** index. Click this deep link to open Kibana in your browser and follow the steps below -
+http://localhost:9200/_plugin/kibana
+
 Click Mangement tab -> Index Patterns -> Create Index -> ***apache-**** -> ***@timestamp*** -> Create Index Pattern
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/apache-index.png)
-
-Lets deploy the *Guestbook* application so we can start ingesting logs and metrics.
-
-# Deploy Guestbook application
-
-**Run** this command to deploy the *Guestbook* application. This will deploy frontend, redis master and redis slaves.
-
-```
- kubectl apply -f guestbook/redis-master.yml &&
- kubectl apply -f guestbook/redis-master-service.yaml &&
- kubectl apply -f guestbook/redis-slave.yml &&
- kubectl apply -f guestbook/redis-slave-service.yaml &&
- kubectl apply -f guestbook/frontend-deployment.yaml &&
- kubectl apply -f guestbook/frontend-service.yaml
-```
-
-**Run** this command to verify Guestbook deployed successfully
-
-```
-kubectl get all -n guestbook
-```
-You should see all the pods, services and deplyments running similar to the example below
-
-```
-pod/frontend-69859f6796-f4nrp      1/1     Running   0          26m
-pod/frontend-69859f6796-ktzhv      1/1     Running   0          26m
-pod/frontend-69859f6796-l2s9m      1/1     Running   0          26m
-pod/redis-master-596696dd4-8g6n9   1/1     Running   0          26m
-pod/redis-slave-96685cfdb-9dv57    1/1     Running   0          26m
-pod/redis-slave-96685cfdb-xgmbr    1/1     Running   0          26m
-NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
-service/frontend       LoadBalancer   172.20.125.197   <pending>     443:31112/TCP   26m
-service/redis-master   ClusterIP      172.20.195.144   <none>        6379/TCP        26m
-service/redis-slave    ClusterIP      172.20.248.13    <none>        6379/TCP        26m
-
-NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/frontend       3/3     3            3           26m
-deployment.apps/redis-master   1/1     1            1           26m
-deployment.apps/redis-slave    2/2     2            2           26m
-
-NAME                                     DESIRED   CURRENT   READY   AGE
-replicaset.apps/frontend-69859f6796      3         3         3       26m
-replicaset.apps/redis-master-596696dd4   1         1         1       26m
-replicaset.apps/redis-slave-96685cfdb    2         2         2       26m
-```
-
 
 # Explore in Kibana
 Lets explore the log data in Kibana. Fluentd is configured to output all the logs into **kubernetes-*** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
@@ -741,6 +698,7 @@ Click Discover tab -> Choose ***kubernetes-**** from dropdown -> use search box 
 
 You will now start seeing all the logs that Fluentd is pushing into Amazon ES. Feel free to search for any other terms your'e interested in such as
 
+**(Optional)**
 Bonus point: If you'd like this data to be more readable, you can create a custom view by choosing specific fields to be displayed. Click on the link below for a quick video on creating your own custom Kibana view.
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kibana-advanced-view.gif
 
@@ -760,7 +718,7 @@ Your application developers have raised a ticket that you have to investigate. T
 **Run** the command below to simulate the scenario
 
 ```
-curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_1.sh && ./mystery_script_1.sh
+ curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_1.sh && chmod +x mystery_script_1.sh && ./mystery_script_1.sh
 ```
 #### Hint
 
@@ -786,20 +744,6 @@ kubectl scale --replicas=2 deployment/frontend -n guestbook
 Your customers have complained that Guestbook website is throwing 404 not found errors. Investigate and identify the root cause.
 
 #### Simulate the scenario
-**Run** the following command and copy ``` Loadbalancer Ingress``` value.
-
-```
-kubectl describe svc frontend -n guestbook
-```
-
-![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mysteryhunt-2-setup.png)
-
-**Replace** the URL below and run the following command to export your guestbook URL into an environment variable
-
-```
-export URL3=your-load-balancer-url.eu-west-1.elb.amazonaws.com
-```
-
 **Run** the command below to simulate the scenario
 ```
 curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_2.sh && chmod +x mystery_script_2.sh && ./mystery_script_2.sh $URL3
@@ -814,7 +758,7 @@ Remeber we created ```apache-``` index? It will have useful information to troub
 
 #### Mystery Solved
 
-Open Kibana, Double-click Discover tab. Then choose apache-* index pattern and search for 404 errors. You will see all the logs records that contain 404 errors.
+Open Kibana, Double-click Discover tab. Then choose apache-* index pattern and search for 404 errors. You will see all the logs records that contain 404 errors. **Make sure the search bar on top is empty**
 
 If you expand the the logs lines you will notice that 404 errors are being generated by paths that do not exist such as ```/index/menu.html``` and ```/index/contactus.html```
 
@@ -850,6 +794,7 @@ The ***redis-*** index contains all the key redis metrics  collected by flunetbi
 Tracking fragmentation ratio is important for understanding your Redis instance’s performance. A fragmentation ratio greater than 1 indicates fragmentation is occurring. A ratio in excess of 1.5 indicates excessive fragmentation, with your Redis instance consuming 150% of the physical memory it requested. A fragmentation ratio below 1 tells you that Redis needs more memory than is available on your system, which leads to swapping. Swapping to disk will cause significant increases in latency (see used memory). Ideally, the operating system would allocate a contiguous segment in physical memory, with a fragmentation ratio equal to 1 or slightly greater.
 
 **Watch this video to create memory fragmentation visualization**
+
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-mem-fragmentation-video.mp4
 
 **(Optional)**
@@ -860,4 +805,5 @@ We've built a custom dashboard to monitor redis metrics. Follow the steps below 
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-dashboard-visualization.zip
 
 **Watch this video to import visualizations into Kibana**
+
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-vis-import.mp4
