@@ -178,7 +178,7 @@ Lets load ```<Loadbalancer Ingress>``` into an environment variable for future u
 export URL3=<Loadbalancer Ingress>
 ```
 
-Now open a broswer and paste ```Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter.
+Now open a broswer and paste ```Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter. **It may take a few minutes for the application to be ready**
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
 
