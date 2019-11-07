@@ -357,6 +357,8 @@ filebeat.inputs:
             - logs_path:
                 logs_path: "/var/log/containers/"
     logging.level: debug
+    
+```
 
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
