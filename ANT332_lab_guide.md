@@ -357,6 +357,7 @@ filebeat.inputs:
             - logs_path:
                 logs_path: "/var/log/containers/"
     logging.level: debug
+```
 
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
@@ -408,7 +409,6 @@ In this lab we enable **system** and **kubernetes** modules. For more informatio
         ....
 ```
 
-
 Note: Metricbeat gets its key metrics from a internal kubernetes service called **kube-state-metrics** It is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. It is focused on the health of the various objects inside, such as deployments, nodes and pods.
 
 #### Install kube-state-metrics
@@ -453,7 +453,12 @@ kubectl -n kube-system get pods | grep metricbeat
 ```
 Output should look like the following if the pods started successfully:
 ```
-
+TeamRole:~/environment/ant332/deploy (master) $ kubectl -n kube-system get pods | grep metricbeat
+metricbeat-578b596685-brp9s           1/1     Running   0          30h
+metricbeat-fnzrw                      1/1     Running   0          30h
+metricbeat-l68nz                      1/1     Running   0          30h
+metricbeat-vfqsn                      1/1     Running   0          30h
+metricbeat-xwr7g                      1/1     Running   0          30h
 ```
 You can get container logs as well if you want to confirm events are being published to Logstash by using the following command:
 ```
@@ -601,6 +606,12 @@ export URL2=OutputFromNestedESStack
 ```
 
 A popular method to deploy complex applications in Kubernetes is through **Helm**. Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes. We  built a helm chart that deploys both Fluentbit and Fluentd with a single command.
+
+**Initialize** helm with the following command:
+
+```
+helm init
+```
 
 **Run** this command to setup the deployment files for Fluentd
 
