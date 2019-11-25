@@ -24,7 +24,12 @@ https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/product-pag
 
 
 # Kubernetes 101
-@saadf
+Kubernetes is an open-source container orchestration and scheduling platform. It's become very popular for web-scale deployments in recent years, as it reduces the operational complexity and time involved in deploying highly scalable infrastructure for service-oriented architectures.
+
+We will be using the Amazon EKS service for deploying our Kubernetes clusters for the course of this workshop.
+
+We will be using the `kubectl` CLI tool for interacting with our EKS cluster's API server. The following cheatsheet describes some common commands to use with `kubectl`:
+<Insert Cheatsheet Images here>
 
 # Monitoring Kubernetes
 
@@ -38,7 +43,7 @@ This level involves everything at the Kubernetes level including pods, container
 
 In this lab we will collect data from both these levels. There's multilple ways to capture and process this data. Lets take a look at two most popular way our customers love to do it.
 
-# Data pipeline option 1:  Beats and Logstsah
+# Data pipeline step 1:  Beats and Logstsah
 In this lab will discuss two different pipelines involving different technologies to collect the metrics. You can use either in production depending on your needs.
 
 Beats is a family of popular open-source data collection agents. Logstash is a popular open-source,server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then pushes the result to various destinations. Logstash acts at the parsing and buffering layer de-coupling the source and the destination. For this lab, we will deploy multiple Logstash instances in an Auto Scaling Group that scale based on resource needs.
@@ -49,7 +54,7 @@ Beats is a family of popular open-source data collection agents. Logstash is a p
 #### Filebeat -> Logstash -> Amazon ES
 Filebeat is a light-weight agent that can tail log files and push the data to Logstash.
 
-# Data pipeline option 2: Fluentd and Fluentbit
+# Data pipeline step 2: Fluentd and Fluentbit
 
 Similarly to the previous pipeline, Fluentd is another popular open-source alternative to collect metrics and logs. Fluentbit is part of the same family of product and acts as a more light-weight forwarder.
 
@@ -78,7 +83,6 @@ Follow the instructions below to note down information such as access key, IP ad
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-3.png)
 
 
-
 # What we will be monitoring today
 We will use a simple 'Guestbook' application, which is a multi-tier web application using Kubernetes and Docker. This example consists of a guestbook application with the following components:
 
@@ -99,29 +103,32 @@ For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana
 
 # Configure Cloud9 IDE
 
-**AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. We will run all our commands from here.
+**AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. It provides an interface to the deployed assets for this workshop, that include a Kubernetes cluster and an AWS Elasticsearch domain. We will run all our commands for this workshop from here.
 
 Lets setup Cloud9 and get started. Cloud9 normally manages IAM credentials dynamically. This isn’t currently compatible with the EKS IAM authentication, so we will disable it and rely on the IAM role instead.**This step is a required step for the rest of the workshop.**
 
-* With the environment open, in the AWS Cloud9 IDE, on the menu bar choose AWS Cloud9, Preferences.
-
-* In the Preferences tab, in the navigation pane, choose AWS Settings, Credentials.
-
-* Use AWS managed temporary credentials to turn AWS managed temporary credentials on or off.
-
+* With the environment open, in the AWS Cloud9 IDE, on the menu bar choose Cloud9 as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-1.png)
+
+* Open the deployed IDE console by clicking the "Open IDE" button as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-2.png)
+
+* Click the the Preferences tab from the "AWS Cloud9" dropdown button, in the navigation pane as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-3.png)
+
+* From the resulting menu choose AWS Settings --> Credentials and set the toggle button for "AWS managed temporary credentials" to disabled as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-4.png)
 
+* Now clean up your Cloud9 IDE Console windows to bring up just a terminal window in the middle and file explorer to the left as shown:
+<Insert gif resizing terminal window and closing extra cloud9 windows>
 
 **Gain EKS Cluster Access Using kubectl and AWS CLI**
 
-Use following command to enter the folder containing our k8s manifests:
+With a bash terminal open in the lower window of your Cloud9 IDE, use the following command to enter the folder containing our k8s manifests:
 ```
 cd /home/ec2-user/environment/ant332/final-deploy
 ```
-Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment. Replace ```<OutputCloud9AdminAccessKeyID>``` and ``` <OutputCloud9AdminSecretAccessKey>``` with corresponding values from your environment.
+Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment. Replace ```<OutputCloud9AdminAccessKeyID>``` and ```<OutputCloud9AdminSecretAccessKey>``` with corresponding values from your environment.
 ```
 chmod +x loadcreds.sh
 source ./loadcreds.sh <OutputCloud9AdminAccessKeyID> <OutputCloud9AdminSecretAccessKey>
