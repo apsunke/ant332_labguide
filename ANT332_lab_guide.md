@@ -172,9 +172,16 @@ Use the following command to see if all pods within the deployment come up corre
 kubectl -n guestbook get pods
 ```
 
-Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command and copy ```Loadbalancer Ingress``` value.
+Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```<Loadbalancer Ingress>``` DNS address for the guestbook app.
+
 ```
-kubectl describe svc frontend -n guestbook
+kubectl get svc frontend -n guestbook -oyaml | | yq r - "status.loadBalancer.ingress[0].hostname"
+```
+
+Output should look like this:
+
+```
+a3adf8asjkdhaj1231f6e67d0c-30d08edda21d396f.elb.us-east-1.amazonaws.com
 ```
 
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mysteryhunt-2-setup.png)
@@ -327,9 +334,15 @@ chmod +x deploy-logstash.sh
 ./deploy-logstash.sh https://<OutputFromNestedESStack>:443
 ```
 
-Note down the Logstash IP address, going forward we will refer to this as `logsash_ip_address`
+Note down the Logstash IP address, going forward we will refer to this as `logsash_ip_address`.
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/logstash-ip.png)
+
+Incase the aforementioned command did not provide the logstash IP, usually due to a small delay in logstash becoming available, run the following command:
+
+```
+kubectl -n logstash get pod -oyaml | yq r - 'items[0].status.podIP'
+```
 
 You can view the pod's readiness state by using the following command to tail the container's logs:
 ```
@@ -445,7 +458,7 @@ deployment.apps/kube-state-metrics created
 
 #### Deploy metricbeat
 
-**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` and `OutputFromNestedESStack` with corresponding values from your environment.
+**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` with the Logstash IP we noted in the Deploying Logstash step earlier and replace `OutputFromNestedESStack` with corresponding values from your Cloudformation stack output.
 
 ```
 cd /home/ec2-user/environment/ant332/final-deploy/metricbeat
@@ -472,8 +485,7 @@ You can get container logs as well if you want to confirm events are being publi
 kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
 ```
 
-Replace `<METRICBEAT_POD_NAME>` with the pod pod's name you got in the previous command.
-
+Replace `<METRICBEAT_POD_NAME>` with the pod pod's name you got in the previous command. You can pick **any** of the four available metricbeat pods' name, they all work in the same way.
 
 # View Metricbeat data in Kibana
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
@@ -613,12 +625,6 @@ export URL2=OutputFromNestedESStack
 ```
 
 A popular method to deploy complex applications in Kubernetes is through **Helm**. Helm is a tool that streamlines installing and managing Kubernetes applications. Think of it like apt/yum/homebrew for Kubernetes. We  built a helm chart that deploys both Fluentbit and Fluentd with a single command.
-
-**Initialize** helm with the following command:
-
-```
-helm init
-```
 
 **Run** this command to setup the deployment files for Fluentd
 
