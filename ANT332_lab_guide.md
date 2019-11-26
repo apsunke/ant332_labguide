@@ -118,15 +118,18 @@ Lets setup Cloud9 and get started. Cloud9 normally manages IAM credentials dynam
 * Open the deployed IDE console by clicking the "Open IDE" button as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-2.png)
 
-* When it comes up, customize the environment by closing the **welcome tab** and **lower work** area, and opening a new **terminal** tab in the main work area.
+* When it comes up, customize the environment by closing the **welcome tab** and **lower work** area
 
-**Note** Your workspace can have a lighter colored theme, you can leave it as-is or you can change it under **Views** menu.
 
-![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+setup.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+close+tab.png)
 
-* Your workspace should now look like this:
+Open a new **terminal** tab in the main work area.
 
-![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/c9after.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+open+terminal.png)
+
+* Your workspace should now look like this. You will execute all commands from this terminal.
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+end+result.png)
 
 * Click the the Preferences tab from the "AWS Cloud9" dropdown button, in the navigation pane as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-3.png)
