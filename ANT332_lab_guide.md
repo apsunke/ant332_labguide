@@ -204,9 +204,7 @@ Output should look like this:
 a3adf8asjkdhaj1231f6e67d0c-30d08edda21d396f.elb.us-east-1.amazonaws.com
 ```
 
-![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mysteryhunt-2-setup.png)
-
-Lets load ```<Loadbalancer Ingress>``` into an environment variable for future use.
+Lets load this ELB address ```<Loadbalancer Ingress>``` into an environment variable for future use.
 
 ```
 export URL3=<Loadbalancer Ingress>
