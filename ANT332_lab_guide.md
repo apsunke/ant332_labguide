@@ -268,14 +268,58 @@ ssh -i bastion.pem -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromN
 
 **Windows:**
 
-Launch PuTTY and create a new session. Use the IP address from the CloudFormation template for input. Give the session a name since we will want to save this in case we lose the session (low laptop
-battery, etc).
+On a Windows 10 machine, navigate to the Start Menu and open PuttyGen by searching for it as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-open.png)
+
+From the menu bar in PuttyGen, click **Conversions** and then **Import key** as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-importkey-1.png)
+
+From the resulting file explorer window, navigate to the location of your **bastion-rsav2** file that was downloaded previously from the S3 console as shown and click open:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-importkey-2.png)
+
+If the key is loaded into PuttyGen Successfully, we'll see the following screen:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-saveppk-1.png)
+
+On this screen, click **Save private key** and from the resulting file explorer window, save the resulting ppk file by giving it a name and clicking **Save** as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-saveppk-2.png)
+
+Now you can close PuttyGen and navigate back to the Start Menu and open Putty by searching for it as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-open.png)
+
+Launch PuTTY and create a new session. Use the `OutputFromNestedBastionStack` parameter from the CloudFormation template outputs as the IP address under **Host Name**.
+
+Give the session a name since we will want to save this in case we lose the session (low laptop battery, etc).
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_800.png)
 
 Expand the SSH section and navigate to the Tunnel.
 
-create a tunnel with a local port of 9200 and a destination found in the value of this param as seen below.
+Using the `<OutputFromNestedESStack>` output parameter, create a tunnel with a local port
+of 9200 and a destination found in the value of this param as seen below:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-tunnel-1.png)
+
+Navigate to the SSH section and add your key or if using pageant, allow agent forwarding:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-load-ppk.png)
+
+Now set the connection keep-alives so our session does not die. This is in the connection section as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-set-keepalive.png)
+
+Finally, save the config by scrolling back up to session and clicking save as shown:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-save-cfg.png)
+
+Go ahead and open the session:
+
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-open-session.png)
 
 ## Step 4: Connect to Kibana with your local browser
 
