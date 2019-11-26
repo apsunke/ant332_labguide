@@ -175,7 +175,7 @@ kubectl -n guestbook get pods
 Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```<Loadbalancer Ingress>``` DNS address for the guestbook app.
 
 ```
-kubectl get svc frontend -n guestbook -oyaml | | yq r - "status.loadBalancer.ingress[0].hostname"
+kubectl get svc frontend -n guestbook -oyaml | yq r - "status.loadBalancer.ingress[0].hostname"
 ```
 
 Output should look like this:
@@ -381,7 +381,7 @@ filebeat.inputs:
 
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
-You can start the deployment using the following command and substituting the ` <logsash_ip_address>` section with the pod IP we saved from Logstash deployment output:
+You can start the deployment using the following command and substituting the `<logsash_ip_address>` section with the pod IP we saved from Logstash deployment output:
 
 ```
 cd /home/ec2-user/environment/ant332/final-deploy/filebeat-manifests
