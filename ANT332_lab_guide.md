@@ -75,10 +75,15 @@ In order to save time, we have already pre-deployed the environment for you. You
 
 Follow the instructions below to note down information such as access key, IP address and Amazon Elasticsearch endpoints. We'll refer to these throught the workshop by their key name, for example ```OutputFromNestedESStack``` will refer to your Amazon ES endpoint.
 
+Click on 'Services' tab and type 'Cloudformation' in the search box.
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-1.png)
 
+Now click on the bottom most stack on your screen. The name of your stack can be different from the one in the screenshot.
+
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-2.png)
+
+Click on the 'Outputs' tab and copy all the values highlighted in the screenshot. We recommend copying these into a notepad as we refer to these multiple times throught the lab.
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cfn-3.png)
 
@@ -113,6 +118,19 @@ Lets setup Cloud9 and get started. Cloud9 normally manages IAM credentials dynam
 * Open the deployed IDE console by clicking the "Open IDE" button as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-2.png)
 
+* When it comes up, customize the environment by closing the **welcome tab** and **lower work** area
+
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+close+tab.png)
+
+Open a new **terminal** tab in the main work area.
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+open+terminal.png)
+
+* Your workspace should now look like this. You will execute all commands from this terminal.
+
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9+end+result.png)
+
 * Click the the Preferences tab from the "AWS Cloud9" dropdown button, in the navigation pane as shown:
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cloud9-3.png)
 
@@ -134,7 +152,9 @@ chmod +x loadcreds.sh
 source ./loadcreds.sh <OutputCloud9AdminAccessKeyID> <OutputCloud9AdminSecretAccessKey>
 ```
 
-Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands:
+Now we will run the bootstrapping for `kubectl` and `aws-iam-authenticator` using the `startup.sh` script with the following commands.
+
+**Note:** This command will output several lines indicating current status. Thats part of the workflow and there's no need to worry. Move on to the next step after when the prompt is ready.
 
 ```
 chmod +x startup.sh
@@ -192,7 +212,11 @@ Lets load ```<Loadbalancer Ingress>``` into an environment variable for future u
 export URL3=<Loadbalancer Ingress>
 ```
 
-Now open a broswer and paste ```Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple guest names and hit enter. **It may take a few minutes for the application to be ready**
+Now open a web broswer like Safari on your laptop and paste ```Loadbalancer Ingress```. It will take you to the guestbook homepage.
+
+**It may take a few minutes for the application to be ready. In case you don't get a response please wait 5 minutes and try again**
+
+Once you see the Guestbook page appear, enter your 2 of your favorite guest names and click **submit**.
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
 
@@ -275,7 +299,7 @@ In this lab we built the following pipeline to parse filebeat, metricbeat data a
 
 In a second filter plugin we do a timestamp match using the `date` filter plugin, which reconciles Elasticsearch's default `@timestamp` field against the actual timestamp in the log file. This is done for both filebeat and metricbeat logs.
 
-We can make changes to this config based on the type of logging we're doing.
+We can make changes to this config based on the type of logging we're doing. Below is a snippet from the Logstash config file for your reference. Review the config and move on to the next step.
 ```
     input {
       beats {
@@ -344,16 +368,15 @@ Incase the aforementioned command did not provide the logstash IP, usually due t
 kubectl -n logstash get pod -oyaml | yq r - 'items[0].status.podIP'
 ```
 
-You can view the pod's readiness state by using the following command to tail the container's logs:
+You can view the pod's readiness state by running the following command. You will notice logstash pods in running state.
+
 ```
 kubectl -n logstash get pods
 ```
 
-Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input. Once the pipeline is ready, we can move to deploying our beats platforms.
-```
-kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
-```
-Use shortcut **ctrl+c** to exit logs output.
+
+Move on to the next step.
+
 
 # Filebeat 101
 
@@ -480,10 +503,6 @@ metricbeat-l68nz                      1/1     Running   0          30h
 metricbeat-vfqsn                      1/1     Running   0          30h
 metricbeat-xwr7g                      1/1     Running   0          30h
 ```
-You can get container logs as well if you want to confirm events are being published to Logstash by using the following command:
-```
-kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
-```
 
 Replace `<METRICBEAT_POD_NAME>` with the pod pod's name you got in the previous command. You can pick **any** of the four available metricbeat pods' name, they all work in the same way.
 
@@ -503,8 +522,9 @@ Congratulations! You've configured you're first end-to-end pipeline. You will no
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/auto-refresh.png)
 
 
+Explore the data that Mericbeat is pushing into Elasticsearch. You can type text into the search bar such as **kubernetes** and filter results. After you finish exploring, you can move on to the next step.  
+
 # Fluentd 101
-*Walk through one Fluentd parsing configuration TBD*
 
 Fluentd is a fully free and fully open-source log collector that instantly enables you to have a 'Log Everything' architecture with 600+ types of systems.Fluentd treats logs as JSON, a popular machine-readable format. It is written primarily in C with a thin-Ruby wrapper that gives users flexibility.
 
@@ -563,7 +583,6 @@ Fluentd can also buffer data, in this case we are leverage disk based persistent
     </match>
 ```
 # What is Fluentbit and how is it different?
-*TBD walk-throgh fluentbit deployment + sidecar container*
 
 Fluent Bit is an open source and multi-platform Log Processor and Forwarder which allows you to collect data/logs from different sources, unify and send them to multiple destinations. It's fully compatible with Docker and Kubernetes environments.
 
@@ -658,44 +677,42 @@ Every time you create a new index in Elasticsearch, you have to configure **Inde
 # Configure Kibana for kubernetes index
 Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
-Click Mangement tab -> Index Patterns -> Create Index -> ***kubernetes-**** -> ***@timestamp*** -> Create Index Pattern
+Click **Mangement** tab
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step1.png)
 
+Now click on **Index Patterns**
+
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step2.png)
+
+Click **Create Index Pattern**
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step3.png)
 
+Type ***kubernetes-**** in the input box
+
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/kubernetes-*-step4.png)
+
+Select ***@timestamp*** field from the drop down and Click  **Create Index Pattern**
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/choose-timestamp.png)
 
-Kibana is now fully setup to start visualizing Kubernetes logs. You can go to the *Discover* tab on the left to start exploring the data.
+Kibana is now fully setup to start visualizing Kubernetes logs. Lets setup the rest of the index patterns so we can visualize all data. Proceed to next step.
 
 # Configure Kibana for redis index
 Repeat the previous step to create an index pattern for **redis-** index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
-Click Mangement tab -> Index Patterns -> Create Index -> ***redis-**** -> ***@timestamp*** -> Create Index Pattern
+Click **Management tab** -> Click **Index Patterns** -> Click **Create Index Pattern** -> Type ***redis-**** in input box -> Choose ***@timestamp*** from drop down-> Click **Create Index Pattern**
+
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-index.png)
 
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-index-2.png)
 
 
 # Configure Kibana for apache index
-Ever since we deployed Fluentd to collect apache logs, there hasn't been any requests to the guestbook application. So there are no access logs yet to collect. In order to generate access logs, lets open the guestbook application in our browser again and add a couple more entries. Fluentd will pick up the logs right-away and start pushing to Amazon ES.  **Run** the following command and copy ``` Loadbalancer Ingress``` value.
-
-```
-kubectl describe svc frontend -n guestbook
-```
-
-Now open a broswer and paste ``` Loadbalancer Ingress``` into your local browser and it will take you to the guestbook homepage. Enter a couple more guest names and hit enter.
-
-![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/broswer-guestbook.png)
-
 Repeat the previous step again to create an index pattern for **apache-** index. Click this deep link to open Kibana in your browser and follow the steps below -
 http://localhost:9200/_plugin/kibana
 
-Click Mangement tab -> Index Patterns -> Create Index -> ***apache-**** -> ***@timestamp*** -> Create Index Pattern
+Click **Management tab** -> Click **Index Patterns** -> Click **Create Index Pattern** -> Type ***apache-**** in input box -> Choose ***@timestamp*** from drop down-> Click **Create Index Pattern**
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/apache-index.png)
 
@@ -704,13 +721,24 @@ Lets explore the log data in Kibana. Fluentd is configured to output all the log
 
 Click Discover tab -> Choose ***kubernetes-**** from dropdown -> use search box to search for guestbook or any other term you're interested in
 
+Double-click **Discover** tab
+
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-1.png)
+
+From the dropdown, choose ***kubernetes-****
 
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-2.png)
 
+
+Type **guestbook** in the search bar and review results.
+
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/view-kuber-step-3.png)
 
-You will now start seeing all the logs that Fluentd is pushing into Amazon ES. Feel free to search for any other terms your'e interested in such as
+You will now start seeing all the logs that Fluentd is pushing into Amazon ES. You can also switch the index from the dropdown to view other index data such as redis, apache etc.
+
+Once you're done exploring, move on to the next step.
+
+
 
 **(Optional)**
 Bonus point: If you'd like this data to be more readable, you can create a custom view by choosing specific fields to be displayed. Click on the link below for a quick video on creating your own custom Kibana view.
@@ -821,3 +849,28 @@ https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-dashb
 **Watch this video to import visualizations into Kibana**
 
 https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-vis-import.mp4
+
+
+### Appendix
+
+**Logstash troubleshooting**
+```
+kubectl -n logstash get pods
+```
+
+Will give you the pod's name, which you can use with the following command to see if the pipeline started listening on port 5044 for beats input. Once the pipeline is ready, we can move to deploying our beats platforms.
+```
+kubectl -n logstash logs -f <LOGSTASH_POD_NAME>
+```
+Use shortcut **ctrl+c** to get back to terminal.
+
+**Metricbeat troubleshooting**
+
+You can get container logs as well if you want to confirm events are being published to Logstash by using the following command:
+```
+kubectl -n kube-system logs -f <METRICBEAT_POD_NAME>
+```
+
+Replace `<METRICBEAT_POD_NAME>` with the pod pod's name you got in the previous command.
+
+Use shortcut **ctrl+c** to get back to terminal.
