@@ -268,7 +268,13 @@ ssh -i bastion.pem -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromN
 
 **Windows:**
 
-On a Windows 10 machine, navigate to the Start Menu and open PuttyGen by searching for it as shown:
+To get started on a Windows machine, download Putty's MSI installer and use it to install Putty from the following download links:
+
+[Windows 10 64-bit](https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.73-installer.msi)
+
+[Windows 10 32-bit](https://the.earth.li/~sgtatham/putty/latest/w32/putty-0.73-installer.msi)
+
+Once Putty has installed successfully, navigate to the Start Menu and open PuttyGen by searching for it as shown:
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-open.png)
 
