@@ -43,7 +43,7 @@ This level involves everything at the Kubernetes level including pods, container
 
 In this lab we will collect data from both these levels. There's multilple ways to capture and process this data. Lets take a look at two most popular way our customers love to do it.
 
-# Data pipeline step 1:  Beats and Logstsah
+# Data pipeline 1:  Beats and Logstash
 In this lab will discuss two different pipelines involving different technologies to collect the metrics. You can use either in production depending on your needs.
 
 Beats is a family of popular open-source data collection agents. Logstash is a popular open-source,server-side data processing pipeline that ingests data from a multitude of sources simultaneously, transforms it, and then pushes the result to various destinations. Logstash acts at the parsing and buffering layer de-coupling the source and the destination. For this lab, we will deploy multiple Logstash instances in an Auto Scaling Group that scale based on resource needs.
@@ -54,7 +54,7 @@ Beats is a family of popular open-source data collection agents. Logstash is a p
 #### Filebeat -> Logstash -> Amazon ES
 Filebeat is a light-weight agent that can tail log files and push the data to Logstash.
 
-# Data pipeline step 2: Fluentd and Fluentbit
+# Data pipeline 2: Fluentd and Fluentbit
 
 Similarly to the previous pipeline, Fluentd is another popular open-source alternative to collect metrics and logs. Fluentbit is part of the same family of product and acts as a more light-weight forwarder.
 
@@ -97,13 +97,12 @@ We will use a simple 'Guestbook' application, which is a multi-tier web applicat
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/guestbook_architecture.png)
 
-# Getting familiar with today's lab environment
+# Get familiar with lab environment
 For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana. We recommend keeping both these open in your broswer as there will significant forth.
 
 **AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. We will run all our commands from here.
 
 **Kibana** is an open source data visualization plugin for Elasticsearch. It provides visualization capabilities on top of the content indexed on an Elasticsearch cluster. We will use Kibana to visualize all the logs and metrics.
-
 
 
 # Configure Cloud9 IDE
@@ -722,7 +721,7 @@ Fluentd will instantly start pushing logs into Amazon ES, next step is to config
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards. Follow the next steps to create Index patterns for all three indices - **kubernetes, redis, apache**
 
 
-# Configure Kibana for kubernetes index
+# Configure Kibana for Kubernetes Index
 Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
 Click **Mangement** tab
@@ -753,8 +752,6 @@ Repeat the previous step to create an index pattern for **redis-** index. Click 
 Click **Management tab** -> Click **Index Patterns** -> Click **Create Index Pattern** -> Type ***redis-**** in input box -> Choose ***@timestamp*** from drop down-> Click **Create Index Pattern**
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/redis-index.png)
-
-
 
 # Configure Kibana for apache index
 Repeat the previous step again to create an index pattern for **apache-** index. Click this deep link to open Kibana in your browser and follow the steps below -
