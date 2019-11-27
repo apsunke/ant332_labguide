@@ -10,17 +10,10 @@ Kubernetes is an open-source container orchestration and scheduling platform. It
 
 We will be using the Amazon EKS service for deploying our Kubernetes clusters for the course of this workshop.
 
-We will be using the `kubectl` CLI tool for interacting with our EKS cluster's API server. The following cheatsheet describes some common commands to use with `kubectl`:
-<Insert Cheatsheet Images here>
+We will be using the `kubectl` CLI tool for interacting with our EKS cluster's API server.
 
-# Monitoring Kubernetes
+The following cheatsheet describes some common commands to use with `kubectl` when interacting with your cluster:
 
-To get full visibility into your applications we need two key elements, metrics and logs for the following aspect.
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cheatsheet1.png)
 
-#### Infrastructure level
-This level will have data pertaining to the worker nodes. For example metrics such as CPU percentage, memory used and also system logs.
-
-#### Kubernetes level
-This level involves everything at the Kubernetes level including pods, containers, error logs and much more.
-
-In this lab we will collect data from both these levels. There's multilple ways to capture and process this data. Lets take a look at two most popular way our customers love to do it.
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cheatsheet2.png)
