@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-US" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<html lang="en" class="js csstransforms3d">
+<head>
+  <meta charset="utf-8">
+  <meta property="og:title" content="ANT332 AWS re:Invent 2019" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="generator" content="Hugo 0.60.0" />
+  <meta name="description" content="ANT332 AWS re:Invent 2019">
+<meta name="author" content="Saad Rana, Anoop Sunke">
+
+  <link rel="shortcut icon" href="https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico" type="image/ico" />
+<link rel="icon" href="https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico" type="image/ico" />
+
+  <title>Configure Kibana :: ANT332 AWS re:Invent 2019</title>
+
+  
+  <link href="../../css/nucleus.css" rel="stylesheet">
+  <link href="../../css/fontawesome-all.min.css" rel="stylesheet">
+  <link href="../../css/hybrid.css" rel="stylesheet">
+  <link href="../../css/featherlight.min.css" rel="stylesheet">
+  <link href="../../css/perfect-scrollbar.min.css" rel="stylesheet">
+  <link href="../../css/auto-complete.css" rel="stylesheet">
+  <link href="../../css/atom-one-dark-reasonable.css" rel="stylesheet">
+  <link href="../../css/theme.css" rel="stylesheet">
+  <link href="../../css/hugo-theme.css" rel="stylesheet">
+  
+  <link href="../../css/theme-aws.css" rel="stylesheet">
+  
+
+  <script src="../../js/jquery-3.3.1.min.js"></script>
+
+  <style>
+    :root #header + #content > #left > #rlblock_left{
+        display:none !important;
+    }
+    
+      :not(pre) > code + span.copy-to-clipboard {
+          display: none;
+      }
+    
+  </style>
+  
+</head>
+
+<body class="" data-url="/en/start/configkibana.html">
+  <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <div>
+    <a href="../../" title="Go home">
+        <img style="vertical-align:middle" src="../../images/logo.png" height="70px" />
+    </a>
+</div>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="../../js/lunr.min.js"></script>
+<script type="text/javascript" src="../../js/auto-complete.js"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/en";
+    
+</script>
+<script type="text/javascript" src="../../js/search.js"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/intro.html" title="Service Overview" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/intro.html">
+          <b>1. </b>Service Overview
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/intro/first-content.html" title="What is Amazon Elasticsearch?" class="dd-item ">
+        <a href="../../en/intro/first-content.html">
+        What is Amazon Elasticsearch?
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/intro/second-content.html" title="What is Amazon EKS?" class="dd-item ">
+        <a href="../../en/intro/second-content.html">
+        What is Amazon EKS?
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/kube101.html" title="Kubernetes 101" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/kube101.html">
+          <b>2. </b>Kubernetes 101
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/monkube.html" title="Monitoring Kubernetes" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/monkube.html">
+          <b>3. </b>Monitoring Kubernetes
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/pipe1.html" title="Data pipeline 1:  Beats and Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/pipe1.html">
+          <b>4. </b>Data pipeline 1:  Beats and Logstash
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/pipe2.html" title="Data pipeline 2: Fluentd and Fluentbit" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/pipe2.html">
+          <b>5. </b>Data pipeline 2: Fluentd and Fluentbit
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start.html" title="Let the lab begin!" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="../../en/start.html">
+          <b>6. </b>Let the lab begin!
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/setup.html" title="Lab Setup and Login to AWS" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/setup.html">
+          Lab Setup and Login to AWS
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/monitoring.html" title="What we are monitoring" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/monitoring.html">
+          What we are monitoring
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/gettingfamiliar.html" title="Get familiar with lab environment" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/gettingfamiliar.html">
+          Get familiar with lab environment
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/configcloud9.html" title="Configure Cloud9 IDE" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/configcloud9.html">
+          Configure Cloud9 IDE
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/deployguest.html" title="Deploy guestbook application" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/deployguest.html">
+          Deploy guestbook application
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/configkibana.html" title="Configure Kibana" class="dd-item 
+        parent
+        active
+        
+        ">
+      <a href="../../en/start/configkibana.html">
+          Configure Kibana
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/deploylogstash.html" title="Deploying Logstash" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/deploylogstash.html">
+          Deploying Logstash
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/filebeat.html" title="Filebeat 101" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/filebeat.html">
+          Filebeat 101
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/metricbeat.html" title="Metricbeat 101" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/metricbeat.html">
+          Metricbeat 101
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/viewmetrics.html" title="View Metricbeat data in Kibana" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/viewmetrics.html">
+          View Metricbeat data in Kibana
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/fluentd.html" title="Fluentd 101" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/fluentd.html">
+          Fluentd 101
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/fluentbit.html" title="What is Fluentbit and how is it different?" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/fluentbit.html">
+          What is Fluentbit and how is it different?
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/fluentsidecar.html" title="Fluentbit deployment as a &#39;Sidecar&#39;" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/fluentsidecar.html">
+          Fluentbit deployment as a &#39;Sidecar&#39;
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/deployfluent.html" title="Deploying Fluentd and Fluentbit" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/deployfluent.html">
+          Deploying Fluentd and Fluentbit
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/indices.html" title="Configuring Index Patterns in Kibana" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/indices.html">
+          Configuring Index Patterns in Kibana
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/indices/k8s.html" title="Configure Kibana for Kubernetes Index" class="dd-item ">
+        <a href="../../en/start/indices/k8s.html">
+        <b>1. </b>Configure Kibana for Kubernetes Index
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/indices/redis.html" title="Configure Kibana for redis index" class="dd-item ">
+        <a href="../../en/start/indices/redis.html">
+        <b>2. </b>Configure Kibana for redis index
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/indices/apache.html" title="Configure Kibana for apache index" class="dd-item ">
+        <a href="../../en/start/indices/apache.html">
+        <b>3. </b>Configure Kibana for apache index
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/explorekibana.html" title="Explore data in Kibana" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/explorekibana.html">
+          Explore data in Kibana
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/en/start/mysteryhunt.html" title="Mystery hunt exercise" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/start/mysteryhunt.html">
+          Mystery hunt exercise
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/mysteryhunt/hunt1.html" title="Mystery hunt 1" class="dd-item ">
+        <a href="../../en/start/mysteryhunt/hunt1.html">
+        <b>1. </b>Mystery hunt 1
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/mysteryhunt/hunt2.html" title="Mystery hunt 2" class="dd-item ">
+        <a href="../../en/start/mysteryhunt/hunt2.html">
+        <b>2. </b>Mystery hunt 2
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/en/start/mysteryhunt/hunt3.html" title="Mystery hunt 3" class="dd-item ">
+        <a href="../../en/start/mysteryhunt/hunt3.html">
+        <b>3. </b>Mystery hunt 3
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/en/appendix.html" title="Appendix" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../en/appendix.html">
+          <b>7. </b>Appendix
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fas fa-language fa-fw"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+                      <option id="en" value="/en/start/configkibana.html" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+      
+      
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <left>
+
+    <h5 class="copyright">&copy; 2019 Amazon Web Services, Inc. or its Affiliates. All rights reserved.<h5>
+
+</left>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+  <section id="body">
+    <div id="overlay"></div>
+    <div class="padding highlightable">
+      
+      <div>
+        <div id="top-bar">
+          
+          
+          <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+            <span id="sidebar-toggle-span">
+              <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                <i class="fa fa-bars"></i>
+              </a>
+            </span>
+            
+            <span id="toc-menu"><i class="fa fa-list-alt"></i></span>
+            
+            <span class="links">
+              
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href='../../en/'>Use Amazon ES to visualize and monitor containerized applications</a> > <a href='../../en/start.html'>Let the lab begin!</a> > Configure Kibana
+          
+          
+          
+          
+          
+          
+            </span>
+          </div>
+          
+          <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#step-1-public-ip-address-of-the-bastion-host-and-amazon-es-endpoint-url">Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL</a></li>
+    <li><a href="#step-2-ssh-key-file-for-bastion-host">Step 2: SSH key file for Bastion host</a></li>
+    <li><a href="#step-3-establish-ssh-tunnel">Step 3: Establish SSH tunnel</a></li>
+    <li><a href="#step-4-connect-to-kibana-with-your-local-browser">Step 4: Connect to Kibana with your local browser</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+          
+        </div>
+      </div>
+      
+
+      
+        <div id="body-inner">
+          <h1>Configure Kibana</h1>
+          
+          
+
+
+
+	<p>Amazon ES supports <strong>public access</strong> domains, which can receive requests from any internet-connected device, and <strong>VPC access</strong> domains, which are isolated from the public internet and hence highly recommended.</p>
+<p>In this lab we have deployed Amazon ES with <strong>VPC access</strong> as its more secure. This endpoint is only visible to the servers inside that same VPC. To access Kibana from your laptop we have to create a SSH tunnel from your laptop to a <em>Bastion host</em> running inside the same VPC. Once you setup this up, you can access Kibana directly from your local broswer on your laptop.</p>
+<p>To eshtablish an SSH tunnel, you need the following three key details. We will be using these details throughout the workshop, we <strong>highly recommend</strong> you make a note of it and keep it handy.</p>
+<h2 id="step-1-public-ip-address-of-the-bastion-host-and-amazon-es-endpoint-url">Step 1: Public IP address of the Bastion host and Amazon ES endpoint URL</h2>
+<p>You've already noted this down in step 1 of the workshop. <code>OutputFromNestedBastionStack</code> refers to the public IP address for bastion host and <code>OutputFromNestedESStack</code> refers to the Amazon ES domain endpoint</p>
+<h2 id="step-2-ssh-key-file-for-bastion-host">Step 2: SSH key file for Bastion host</h2>
+<p>You can find the name of your private key's S3 bucket by -&gt; Cloudformation -&gt; Click on the bottom most stack -&gt; go to Outputs -&gt; Copy S3 bucket name next to <code>BastionHostPrivateKeyBucket</code></p>
+<p>Now we need to download the private key for our bastion host from this S3 bucket. Use the following steps by going to the S3 console:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_300.png" alt="alt text"></p>
+<p>Then search for our previously copied bucket name:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_400.png" alt="alt text"></p>
+<p>Click on the bucket name in order to open it and you will see our private key file:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_600.png" alt="alt text"></p>
+<p>Click on the <code>bastion.pem</code> file and you can then download the key to your local machine by clicking the resulting <code>Download</code> button as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_700.png" alt="alt text"></p>
+<h2 id="step-3-establish-ssh-tunnel">Step 3: Establish SSH tunnel</h2>
+<p>In order to load Kibana on your laptop’s browser, you need to send the traffic to your Amazon ES domain. Since the domain is in your VPC, and your Amazon ES cluster is in a private subnet, you must port forward to our bastion box and then access Kibana.</p>
+<p>You need the public IP address of the bastion host and endpoint address of the Elasticsearch deployment which you copied as part of step 1.</p>
+<p><strong>MacOS and Linux:</strong></p>
+<p>In your <strong>local MacOS or Linux terminal (not Cloud9)</strong> navigate to the folder where you downloaded the .pem file and run the following command. Replace <code>&lt;OutputFromNestedESStack&gt;</code> and <code>&lt;OutputFromNestedBastionStack&gt;</code> with the respective values copied from the previous step.</p>
+<pre><code>cd /path/to/your_bastion_pem_folder
+chmod 400 bastion.pem
+ssh -i bastion.pem -N -L 9200:&lt;OutputFromNestedESStack&gt;:80 ec2-user@&lt;OutputFromNestedBastionStack&gt;
+</code></pre><p><strong>Windows:</strong></p>
+<p>To get started on a Windows machine, download Putty's MSI installer and use it to install Putty from the following download links:</p>
+<p><a href="https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.73-installer.msi">Windows 10 64-bit</a></p>
+<p><a href="https://the.earth.li/~sgtatham/putty/latest/w32/putty-0.73-installer.msi">Windows 10 32-bit</a></p>
+<p>Once Putty has installed successfully, navigate to the Start Menu and open PuttyGen by searching for it as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-open.png" alt="alt text"></p>
+<p>From the menu bar in PuttyGen, click <strong>Conversions</strong> and then <strong>Import key</strong> as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-importkey-1.png" alt="alt text"></p>
+<p>From the resulting file explorer window, navigate to the location of your <strong>bastion-rsav2</strong> file that was downloaded previously from the S3 console as shown and click open:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-importkey-2.png" alt="alt text"></p>
+<p>If the key is loaded into PuttyGen Successfully, we'll see the following screen:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-saveppk-1.png" alt="alt text"></p>
+<p>On this screen, click <strong>Save private key</strong> and from the resulting file explorer window, save the resulting ppk file by giving it a name and clicking <strong>Save</strong> as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/puttygen-saveppk-2.png" alt="alt text"></p>
+<p>Now you can close PuttyGen and navigate back to the Start Menu and open Putty by searching for it as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-open.png" alt="alt text"></p>
+<p>Launch PuTTY and create a new session. Use the <code>OutputFromNestedBastionStack</code> parameter from the CloudFormation template outputs as the IP address under <strong>Host Name</strong>.</p>
+<p>Give the session a name since we will want to save this in case we lose the session (low laptop battery, etc).</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_800.png" alt="alt text"></p>
+<p>Expand the SSH section and navigate to the Tunnel.</p>
+<p>Using the <code>&lt;OutputFromNestedESStack&gt;</code> output parameter, create a tunnel with a local port
+of 9200 and a destination found in the value of this param as seen below:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-tunnel-1.png" alt="alt text"></p>
+<p>Navigate to the SSH section and add your key or if using pageant, allow agent forwarding:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-load-ppk.png" alt="alt text"></p>
+<p>Now set the connection keep-alives so our session does not die. This is in the connection section as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-set-keepalive.png" alt="alt text"></p>
+<p>Finally, save the config by scrolling back up to session and clicking save as shown:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-save-cfg.png" alt="alt text"></p>
+<p>Go ahead and open the session:</p>
+<p><img src="https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-open-session.png" alt="alt text"></p>
+<h2 id="step-4-connect-to-kibana-with-your-local-browser">Step 4: Connect to Kibana with your local browser</h2>
+<p>Open this link in deep link to open Kibana in local browser on your laptop and on the welcome screen click <strong>Explore on my own</strong></p>
+<p>(Open new tab)</p>
+<p>http://localhost:9200/_plugin/kibana</p>
+<p>You will will taken to the Kibana home page with many controls and dashboards. Kibana does not have any data yet, so lets switch back to Cloud9 to start emitting data to Amazon ES.</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="../../en/start/deployguest.html" title="Deploy guestbook application"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="../../en/start/deploylogstash.html" title="Deploying Logstash" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="../../js/clipboard.min.js"></script>
+    <script src="../../js/perfect-scrollbar.min.js"></script>
+    <script src="../../js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../../js/jquery.sticky.js"></script>
+    <script src="../../js/featherlight.min.js"></script>
+    <script src="../../js/html5shiv-printshiv.min.js"></script>
+    <script src="../../js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../../js/modernizr.custom-3.6.0.js"></script>
+    <script src="../../js/learn.js"></script>
+    <script src="../../js/hugo-learn.js"></script>
+
+    <link href="../../mermaid/mermaid.css" rel="stylesheet" />
+    <script src="../../mermaid/mermaid.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    
+  </body>
+</html>
+

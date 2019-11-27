@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Configuring Index Patterns in Kibana on ANT332 AWS re:Invent 2019</title>
+    <link>/en/start/indices.html</link>
+    <description>Recent content in Configuring Index Patterns in Kibana on ANT332 AWS re:Invent 2019</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 26 Nov 2019 20:44:51 -0800</lastBuildDate>
+    
+	<atom:link href="/en/start/indices/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Configure Kibana for Kubernetes Index</title>
+      <link>/en/start/indices/k8s.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/indices/k8s.html</guid>
+      <description>Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Click Mangement tab
+Now click on Index Patterns
+Click Create Index Pattern
+Type kubernetes-* in the input box
+Select @timestamp field from the drop down and Click Create Index Pattern
+Kibana is now fully setup to start visualizing Kubernetes logs. Lets setup the rest of the index patterns so we can visualize all data.</description>
+    </item>
+    
+    <item>
+      <title>Configure Kibana for redis index</title>
+      <link>/en/start/indices/redis.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/indices/redis.html</guid>
+      <description>Repeat the previous step to create an index pattern for redis- index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Click Management tab -&amp;gt; Click Index Patterns -&amp;gt; Click Create Index Pattern -&amp;gt; Type redis-* in input box -&amp;gt; Choose ***@timestamp*** from drop down-&amp;gt; Click **Create Index Pattern**</description>
+    </item>
+    
+    <item>
+      <title>Configure Kibana for apache index</title>
+      <link>/en/start/indices/apache.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/indices/apache.html</guid>
+      <description>Repeat the previous step again to create an index pattern for apache- index. Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Click Management tab -&amp;gt; Click Index Patterns -&amp;gt; Click Create Index Pattern -&amp;gt; Type apache-* in input box -&amp;gt; Choose ***@timestamp*** from drop down-&amp;gt; Click **Create Index Pattern**</description>
+    </item>
+    
+  </channel>
+</rss>

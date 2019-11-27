@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Service Overview on ANT332 AWS re:Invent 2019</title>
+    <link>/en/intro.html</link>
+    <description>Recent content in Service Overview on ANT332 AWS re:Invent 2019</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 26 Nov 2019 19:42:40 -0800</lastBuildDate>
+    
+	<atom:link href="/en/intro/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>What is Amazon Elasticsearch?</title>
+      <link>/en/intro/first-content.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/intro/first-content.html</guid>
+      <description>Amazon Elasticsearch Service is a fully managed service that makes it easy for you to deploy, secure, and operate Elasticsearch at scale with zero down time. The service offers open-source Elasticsearch APIs, managed Kibana, and integrations with Logstash and other AWS Services, enabling you to securely ingest data from any source and search, analyze, and visualize it in real time. Amazon Elasticsearch Service lets you pay only for what you use – there are no upfront costs or usage requirements.</description>
+    </item>
+    
+    <item>
+      <title>What is Amazon EKS?</title>
+      <link>/en/intro/second-content.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/intro/second-content.html</guid>
+      <description>Amazon Elastic Kubernetes Service (Amazon EKS) makes it easy to deploy, manage, and scale containerized applications using Kubernetes on AWS.
+Amazon EKS runs the Kubernetes management infrastructure for you across multiple AWS availability zones to eliminate a single point of failure. Amazon EKS is certified Kubernetes conformant so you can use existing tooling and plugins from partners and the Kubernetes community. Applications running on any standard Kubernetes environment are fully compatible and can be easily migrated to Amazon EKS.</description>
+    </item>
+    
+  </channel>
+</rss>

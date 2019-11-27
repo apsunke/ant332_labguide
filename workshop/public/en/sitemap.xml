@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/en/start/indices/k8s.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/mysteryhunt/hunt1.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/intro/first-content.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/</loc>
+    <lastmod>2019-11-26T19:42:40-08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="/fr/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="/en/"
+                />
+  </url>
+  
+  <url>
+    <loc>/en/start/indices/redis.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/mysteryhunt/hunt2.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/intro/second-content.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/indices/apache.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/mysteryhunt/hunt3.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/intro.html</loc>
+    <lastmod>2019-11-26T19:42:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/kube101.html</loc>
+    <lastmod>2019-11-26T20:05:15-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/monkube.html</loc>
+    <lastmod>2019-11-26T20:07:58-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/pipe1.html</loc>
+    <lastmod>2019-11-26T20:10:33-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/pipe2.html</loc>
+    <lastmod>2019-11-26T20:10:38-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start.html</loc>
+    <lastmod>2019-11-26T20:14:20-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/appendix.html</loc>
+    <lastmod>2019-11-26T21:01:43-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/setup.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/monitoring.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/gettingfamiliar.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/configcloud9.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/deployguest.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/configkibana.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/deploylogstash.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/filebeat.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/metricbeat.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/viewmetrics.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/fluentd.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/fluentbit.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/fluentsidecar.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/deployfluent.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/indices.html</loc>
+    <lastmod>2019-11-26T20:44:51-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/explorekibana.html</loc>
+    <lastmod>2019-11-26T19:44:40-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/start/mysteryhunt.html</loc>
+    <lastmod>2019-11-26T20:55:15-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/en/categories.html</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="/fr/categories.html"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="/en/categories.html"
+                />
+  </url>
+  
+  <url>
+    <loc>/en/tags.html</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="fr"
+                href="/fr/tags.html"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="/en/tags.html"
+                />
+  </url>
+  
+</urlset>
