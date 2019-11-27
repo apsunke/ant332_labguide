@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mystery hunt exercise on ANT332 AWS re:Invent 2019</title>
+    <link>/en/start/mysteryhunt.html</link>
+    <description>Recent content in Mystery hunt exercise on ANT332 AWS re:Invent 2019</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Tue, 26 Nov 2019 20:55:15 -0800</lastBuildDate>
+    
+	<atom:link href="/en/start/mysteryhunt/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mystery hunt 1</title>
+      <link>/en/start/mysteryhunt/hunt1.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/mysteryhunt/hunt1.html</guid>
+      <description>Your application developers have raised a ticket that you have to investigate. They are unable to reach their throughput goals despite scaling their application pods. What could be the issue?
+Simulate the scenario Run the command below to simulate the scenario
+ curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_1.sh &amp;amp;&amp;amp; chmod +x mystery_script_1.sh &amp;amp;&amp;amp; ./mystery_script_1.sh Hint [Metricbeat Kubernetes] Overview ECS Kibana dashboard is a great place to start to get a quick high level overview of your Kubernetes environment.</description>
+    </item>
+    
+    <item>
+      <title>Mystery hunt 2</title>
+      <link>/en/start/mysteryhunt/hunt2.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/mysteryhunt/hunt2.html</guid>
+      <description>Your customers have complained that Guestbook website is throwing 404 not found errors. Investigate and identify the root cause.
+Simulate the scenario Run the command below to simulate the scenario
+curl -O https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery_script_2.sh &amp;amp;&amp;amp; chmod +x mystery_script_2.sh &amp;amp;&amp;amp; ./mystery_script_2.sh $URL3 Hint Remeber we created apache- index? It will have useful information to troubleshoot.
+Mystery Solved Open Kibana, Double-click Discover tab. Then choose apache-* index pattern and search for 404 errors. You will see all the logs records that contain 404 errors.</description>
+    </item>
+    
+    <item>
+      <title>Mystery hunt 3</title>
+      <link>/en/start/mysteryhunt/hunt3.html</link>
+      <pubDate>Tue, 26 Nov 2019 19:44:40 -0800</pubDate>
+      
+      <guid>/en/start/mysteryhunt/hunt3.html</guid>
+      <description>Your development team has reported that redis performance has degraded over time. They suspect memory fragmentation may be the root cause. They&#39;ve asked for an easy way to get visibility into trend of memory fragmentation over a period of time.
+Hint Remember we created the redis- index? Examine the contents of this index and build a visualization in Kibana.
+Mystery Solved The redis- index contains all the key redis metrics collected by flunetbit.</description>
+    </item>
+    
+  </channel>
+</rss>
