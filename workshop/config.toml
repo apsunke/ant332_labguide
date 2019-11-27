@@ -14,7 +14,6 @@ pygmentsCodeFences = true
 pygmentsStyle = "monokai"
 
 [params]
-  editURL = "https://code.amazon.com/packages/Aws-workshop-template/blobs/master/--/workshop/content/"
   description = "ANT332 AWS re:Invent 2019"
   author = "Saad Rana, Anoop Sunke"
   disableBreadcrumb = false
