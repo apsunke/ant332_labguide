@@ -21,15 +21,16 @@ Now we need to download the private key for our bastion host from this S3 bucket
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_300.png)
 
+
 Then search for our previously copied bucket name:
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_400.png)
 
 Click on the bucket name in order to open it and you will see our private key file:
 
-![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_600.png)
+![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion+key+file.png)
 
-Click on the `bastion.pem` file and you can then download the key to your local machine by clicking the resulting `Download` button as shown:
+Click on the `bastion-rsav2` file and you can then download the key to your local machine by clicking the resulting `Download` button as shown:
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/bastion_700.png)
 
@@ -45,8 +46,8 @@ In your **local MacOS or Linux terminal (not Cloud9)** navigate to the folder wh
 
 ```
 cd /path/to/your_bastion_pem_folder
-chmod 400 bastion.pem
-ssh -i bastion.pem -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromNestedBastionStack>
+chmod 400 bastion-rsav2
+ssh -i bastion-rsav2 -N -L 9200:<OutputFromNestedESStack>:80 ec2-user@<OutputFromNestedBastionStack>
 ```
 
 **Windows:**
@@ -89,8 +90,8 @@ Give the session a name since we will want to save this in case we lose the sess
 
 Expand the SSH section and navigate to the Tunnel.
 
-Using the `<OutputFromNestedESStack>` output parameter, create a tunnel with a local port
-of 9200 and a destination found in the value of this param as seen below:
+As shown in the screenshot below, enter `<OutputFromNestedESStack>:80` in the Destination input to connect to `port 80`. This will create a tunnel with a local port
+of `9200` and this destination.
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/putty-tunnel-1.png)
 

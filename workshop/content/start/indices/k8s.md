@@ -5,7 +5,11 @@ weight = 1
 pre = "<b>1. </b>"
 +++
 
-Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
+Click this deep link to open Kibana in your browser and follow the steps below -
+
+[http://localhost:9200/_plugin/kibana](http://localhost:9200/_plugin/kibana)
+
+
 
 Click **Mangement** tab
 

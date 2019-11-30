@@ -7,14 +7,12 @@ weight = 11
 ## Instructions to log into your AWS account
 
 ### Step 1:
-On your table, you will have a piece of paper that holds information needed to log into your AWS account
+Click on the deep link below to open Event Engine portal.
 
-You will find a URL under the column named **team-hash-login**. The URL will look like this ```https://dashboard.eventengine.run/login?hash=yourHash123```
-
-Copy paste this URL into a local browser on your laptop.
+https://dashboard.eventengine.run/
 
 ### Step 2: Login with team hash
-Enter the **team-hash** value into the box and then click accept.
+There's a piece of paper on your table that has a unique ID for each of you. Enter the `team-hash` value into the box and then click accept.
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/teams-setup.png)
 

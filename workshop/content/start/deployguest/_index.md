@@ -4,7 +4,9 @@ date = 2019-11-26T19:44:40-08:00
 weight = 15
 +++
 
-**Run** the following command to setup and delpoy guestbook application deployment.
+Lets deploy the Guestbook application so that we can start monitoring and collecting logs. Towards the end of the lab we will simulate scenarios and use this data to diagnose the root cause.
+
+**Run** the following command to setup and deploy guestbook application deployment.
 
 ```
 cd guestbook

@@ -6,4 +6,4 @@ chapter = true
 pre = "<b>6. </b>"
 +++
 
-In order to save time, we have already pre-deployed the environment for you. You account will have the following resources
+In order to save time, we have already pre-deployed the environment for you. Move on to the next step to learn what's deployed.

@@ -12,7 +12,7 @@ We will be using the Amazon EKS service for deploying our Kubernetes clusters fo
 
 We will be using the `kubectl` CLI tool for interacting with our EKS cluster's API server.
 
-The following cheatsheet describes some common commands to use with `kubectl` when interacting with your cluster:
+The following cheatsheet describes some common commands to use with `kubectl` when interacting with your cluster. We will provide all the relevant commands throughput the lab, this document is just for your reference.
 
 ![alt text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/cheatsheet1.png)
 

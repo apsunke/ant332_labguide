@@ -18,7 +18,7 @@ A popular method to deploy complex applications in Kubernetes is through **Helm*
 cd /home/ec2-user/environment/ant332 && unzip deploy.zip && cd deploy
 ```
 
-**Run** this command to deploy Fluetnd and Fluentbit
+**Run** this command to deploy Fluentd and Fluentbit
 ```
 helm upgrade -i --namespace=logging --set elasticsearch.host=$URL2 fluentd-elasticsearch fluentd-elasticsearch
 ```

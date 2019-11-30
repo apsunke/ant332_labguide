@@ -54,7 +54,7 @@ deployment.apps/kube-state-metrics created
 
 #### Deploy metricbeat
 
-**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` with the Logstash IP we noted in the Deploying Logstash step earlier and replace `OutputFromNestedESStack` with corresponding values from your Cloudformation stack output.
+**Run** this command to deploy Metricbeat. Metricbeat is set to automatically load pre-built Kibana dashboards and also starts pushing data into Logstash. Replace `logsash_ip_address` with the Logstash IP we noted in the Deploying Logstash step earlier. Next use `OutputFromNestedESStack` from your Cloudformation stack output along with port `443` as shown in the script below.
 
 ```
 cd /home/ec2-user/environment/ant332/final-deploy/metricbeat
