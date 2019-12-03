@@ -28,13 +28,20 @@ filebeat.inputs:
 
 Our filebeat deployment for this workshop runs a DaemonSet resource in Kubernetes, which means a logging container deployed per EKS worker node.
 
-You can start the deployment using the following command and substituting the `<logsash_ip_address>` section with the pod IP we saved from Logstash deployment output:
+Navigate to the filebeat folder using the following commands and change permissions to executable on our `deploy-filebeat-sh` script as shown:
 
 ```
 cd /home/ec2-user/environment/ant332/final-deploy/filebeat-manifests
 chmod +x deploy-filebeat.sh
+```
+
+You can now start the deployment using the following command and substituting the `<logsash_ip_address>` section with the pod IP we saved from Logstash deployment output as shown:
+
+```
 ./deploy-filebeat.sh <logsash_ip_address>
 ```
+
+***HELPER:*** Incase you make a mistake during these deployment steps, refer to the [Filebeat Troubleshooting](http://eseksworkshop.com/en/appendix.html#filebeat-troubleshooting) section in this lab's [Appendix](http://eseksworkshop.com/en/appendix.html).
 
 You can confirm deployment using the following command:
 

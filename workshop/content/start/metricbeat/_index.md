@@ -66,6 +66,8 @@ Metricbeat is set to automatically load pre-built Kibana dashboards and also sta
 ./deploy-metricbeat.sh <logsash_ip_address> <OutputFromNestedESStack>:443
 ```
 
+***HELPER:*** Incase you make a mistake during these deployment steps, refer to the [Metricbeat Troubleshooting](http://eseksworkshop.com/en/appendix.html#metricbeat-troubleshooting) section in this lab's [Appendix](http://eseksworkshop.com/en/appendix.html).
+
 You can run the following command to see if the metricbeat pods started correctly:
 
 ```
