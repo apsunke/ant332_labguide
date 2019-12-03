@@ -6,6 +6,8 @@ weight = 19
 
 Every time you create a new index in Elasticsearch, you have to configure **Index Pattern** in Kibana. This allows Kibana to be aware of the index and and lets you start creating visualizations and dashboards.
 
+However in the case of metricbeat, it automatically loads the index pattern when its deployed saving us an extra step.
+
 Click this deep link to open Kibana in your browser and follow the steps below - http://localhost:9200/_plugin/kibana
 
 Double click on discover → From the drop down, choose metricbeat
