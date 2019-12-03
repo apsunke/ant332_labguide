@@ -42,7 +42,7 @@ You need the public IP address of the bastion host and endpoint address of the E
 
 **MacOS and Linux:**
 
-In your **local MacOS or Linux terminal (not Cloud9)** navigate to the folder where you downloaded the .pem file and run the following command. Replace `<OutputFromNestedESStack>` and `<OutputFromNestedBastionStack>` with the respective values copied from the previous step.
+In your **local MacOS or Linux terminal (not Cloud9)** navigate to the folder where you downloaded the .pem file and run the following command. Replace `<OutputFromNestedESStack>` and `<OutputFromNestedBastionStack>` with the respective values copied from the previous step. Please ensure the that you run the command exactly as displayed below, particularly the `port numbers`.
 
 ```
 cd /path/to/your_bastion_pem_folder
@@ -120,3 +120,7 @@ Open this link in deep link to open Kibana in local browser on your laptop and o
 http://localhost:9200/_plugin/kibana
 
 You will will taken to the Kibana home page with many controls and dashboards. Kibana does not have any data yet, so lets switch back to Cloud9 to start emitting data to Amazon ES.
+
+### Note: Your SSH tunnel can fail due to wi-fi issues. When the tunnel fails, you will not be able to connect to Kibana and/or notice Kibana unresponsive errors.
+
+### Please monitor and re-eshtablish the SSH tunnel as needed.

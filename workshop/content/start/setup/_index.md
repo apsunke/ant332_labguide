@@ -22,7 +22,7 @@ Now click on **AWS Console** to open the relevant links.
 
 Now Click on **Open AWS Console** to log into your console.
 
-![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/teams-setup-3.png)
+![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/teams-setup-3-v2.png)
 
 ## Lab Setup Overview
 

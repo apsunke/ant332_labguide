@@ -38,10 +38,10 @@ Open a new **terminal** tab in the main work area.
 With a bash terminal open in the lower window of your Cloud9 IDE, use the following command to enter the folder containing our k8s manifests:
 ```
 cd /home/ec2-user/environment/ant332/final-deploy
+chmod +x loadcreds.sh
 ```
 Once here run the following to allow execution on our loadcreds.sh script and then run it to load EKS credentials into your Cloud9 environment. Replace ```<OutputCloud9AdminAccessKeyID>``` and ```<OutputCloud9AdminSecretAccessKey>``` with corresponding values from your environment.
 ```
-chmod +x loadcreds.sh
 source ./loadcreds.sh <OutputCloud9AdminAccessKeyID> <OutputCloud9AdminSecretAccessKey>
 ```
 

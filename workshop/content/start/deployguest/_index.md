@@ -19,7 +19,7 @@ Use the following command to see if all pods within the deployment come up corre
 kubectl -n guestbook get pods
 ```
 
-Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```<Loadbalancer Ingress>``` DNS address for the guestbook app.
+Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```Loadbalancer Ingress``` DNS address for the guestbook app.
 
 ```
 kubectl get svc frontend -n guestbook -oyaml | yq r - "status.loadBalancer.ingress[0].hostname"
@@ -31,10 +31,10 @@ Output should look like this:
 a3adf8asjkdhaj1231f6e67d0c-30d08edda21d396f.elb.us-east-1.amazonaws.com
 ```
 
-Lets load this ELB address ```<Loadbalancer Ingress>``` into an environment variable for future use.
+Lets load this ELB address ```Loadbalancer Ingress``` into an environment variable for future use.
 
 ```
-export URL3=<Loadbalancer Ingress>
+export URL3=Loadbalancer Ingress
 ```
 
 Now open a web broswer like Safari on your laptop and paste ```Loadbalancer Ingress```. It will take you to the guestbook homepage.

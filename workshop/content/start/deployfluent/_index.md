@@ -4,7 +4,7 @@ date = 2019-11-26T19:44:40-08:00
 weight = 23
 +++
 
-Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by **modifying the url with your Amazon ES endpoint**
+Lets configure Fluentd to output to your Amazon ES domain. Copy your Amazon ES endpoint from the 'Configure Kibana' step. **Run** the following command by modifying the `OutputFromNestedESStack` with your endpoint.
 
 ```
 export URL2=OutputFromNestedESStack

@@ -62,12 +62,14 @@ We can make changes to this config based on the type of logging we're doing. Bel
 Navigate to the `logstash-manifests` directory under `ant332/final-deploy` (this should be your current working directory) folder by using the following command:
 ```
 cd /home/ec2-user/environment/ant332/final-deploy/logstash-manifests
-```
-
-First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step. Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step.
-
-```
 chmod +x deploy-logstash.sh
+```
+
+First we need to update the `logstash-deployment.yml` with our Elasticsearch endpoint's address, for this run the following command.
+
+Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Cloud9 setup step. Please ensure that the URL has `https` followed by `443` port number.
+
+```
 ./deploy-logstash.sh https://<OutputFromNestedESStack>:443
 ```
 
