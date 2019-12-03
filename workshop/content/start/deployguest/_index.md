@@ -19,7 +19,7 @@ Use the following command to see if all pods within the deployment come up corre
 kubectl -n guestbook get pods
 ```
 
-Lets access the guestbook application and submit a few entries. Guestbook in configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```Loadbalancer Ingress``` DNS address for the guestbook app.
+Lets access the guestbook application and submit a few entries. Guestbook is configured to deploy an Elastic Load Balancer (ELB) to handle incoming traffic.  **Run** the following command to get the ```Loadbalancer Ingress``` DNS address for the guestbook app.
 
 ```
 kubectl get svc frontend -n guestbook -oyaml | yq r - "status.loadBalancer.ingress[0].hostname"

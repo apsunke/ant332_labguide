@@ -73,7 +73,9 @@ Replace the `<OutputFromNestedESStack>` with the Elasticsearch endpoint the Clou
 ./deploy-logstash.sh https://<OutputFromNestedESStack>:443
 ```
 
-Note down the Logstash IP address, going forward we will refer to this as `logsash_ip_address`.
+***HELPER:*** Incase you make a mistake during these deployment steps, refer to the [Logstash Troubleshooting](http://eseksworkshop.com/en/appendix.html#logstash-troubleshooting) section in this lab's [Appendix](http://eseksworkshop.com/en/appendix.html).
+
+Move on to the next step. Note down the Logstash IP address, going forward we will refer to this as `logsash_ip_address`.
 
 ![](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/logstash-ip.png)
 
@@ -88,5 +90,3 @@ You can view the pod's readiness state by running the following command. You wil
 ```
 kubectl -n logstash get pods
 ```
-
-Move on to the next step.

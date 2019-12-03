@@ -41,6 +41,8 @@ You can now start the deployment using the following command and substituting th
 ./deploy-filebeat.sh <logsash_ip_address>
 ```
 
+***HELPER:*** Incase you make a mistake during these deployment steps, refer to the [Filebeat Troubleshooting](http://eseksworkshop.com/en/appendix.html#filebeat-troubleshooting) section in this lab's [Appendix](http://eseksworkshop.com/en/appendix.html).
+
 You can confirm deployment using the following command:
 
 ```

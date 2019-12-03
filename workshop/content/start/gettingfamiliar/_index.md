@@ -4,7 +4,7 @@ date = 2019-11-26T19:44:40-08:00
 weight = 13
 +++
 
-For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana. We recommend keeping both these open in your broswer as there will significant forth.
+For the lab today, you will primarily use two interfaces - AWS Cloud9 and Kibana. We recommend keeping both these open in your broswer as there will significant back-and-forth.
 
 **AWS Cloud9** is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. We will run all our commands from here.
 
