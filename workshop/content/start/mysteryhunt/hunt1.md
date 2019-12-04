@@ -21,13 +21,13 @@ Your application developers have raised a ticket that you have to investigate. T
 
 
 #### Mystery Solved
-The mystery_script_1.sh scaled up the frontend deployment to 100 replicas. However due to resource constraints the current EKS cluster can only deploy 39 pods across all deployments. So, the rest of the scale up requests are queued for future deployment when resources become available. You will notice a high number of unavailable pods frontend deployment has the highest number of unavailable pods. One possible resolution is to provision more worker nodes to add more capacity.
+The mystery_script_1.sh scaled up the frontend deployment to 100 replicas. However due to resource constraints the current EKS cluster can only deploy 39 pods across all deployments. So, the rest of the scale up requests are queued for future deployment when resources become available. You will notice a high number of unavailable pods. The frontend deployment has the highest number of unavailable pods. One possible resolution is to provision more worker nodes to add more capacity.
 
 ![Alt Text](https://ant332.s3-us-west-2.amazonaws.com/ant332-lab-guide-artifacts/mystery-1-solved.png)
 
 **(Optional)**
 
-If you'd like to experiment in real-time, execute the following command to scale down frontend to 2 replicas, you should see this reflect in you Kibana dashboard instantly.
+If you'd like to experiment in real-time, execute the following command to scale down the frontend to 2 replicas. You should see this reflected in your Kibana dashboard instantly.
 
 ```
 kubectl scale --replicas=2 deployment/frontend -n guestbook
